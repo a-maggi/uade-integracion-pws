@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default HomePage = () => {
+export default () => {
   const classes = useStyles();
 
   return (
