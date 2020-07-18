@@ -3,8 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -12,6 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 function Copyright() {
   return (
@@ -55,10 +56,55 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  wrapper: {
+    position: 'relative',
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
 }));
 
 export default () => {
   const classes = useStyles();
+  const [loading, setLoading] = React.useState(false);
+  const [messageError, seMessageError] = React.useState(false);
+  const [formData, updateFormData] = React.useState({
+    identifier: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    updateFormData({
+      ...formData,
+
+      // Trimming any whitespace
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    console.log(formData)
+    const data = await fetch('https://integracion-apps.herokuapp.com/auth/local', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+    const results = await data.json();
+    console.log(results);
+    if (results.statusCode > 300) seMessageError(results.message)
+    else seMessageError(false)
+    setLoading(false)
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -72,7 +118,8 @@ export default () => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={onSubmit}>
+            {messageError && <FormHelperText>{Array.isArray(messageError)? messageError[0].messages[0].message : messageError }</FormHelperText>}
             <TextField
               variant="outlined"
               margin="normal"
@@ -80,8 +127,9 @@ export default () => {
               fullWidth
               id="email"
               label="Email Address"
-              name="email"
+              name="identifier"
               autoComplete="email"
+              onChange={handleChange}
               autoFocus
             />
             <TextField
@@ -94,32 +142,21 @@ export default () => {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handleChange}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+            <div className={classes.wrapper}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                className={classes.submit}
+              >
+                Ingresar
+          </Button>
+              {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+            </div>
             <Box mt={5}>
               <Copyright />
             </Box>

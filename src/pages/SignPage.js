@@ -3,6 +3,10 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
@@ -63,12 +67,11 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const classes = useStyles();
   const [loading, setLoading] = React.useState(false);
-  const [isManual, setManual] = React.useState(false);
-  const [messageError, seMessageError] = React.useState(false);
+  const [messageError, setMessageError] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
   const [formData, updateFormData] = React.useState({
     taxNumber: "",
-    type: "entry",
-    fechaHora: ""
+    type: "entry"
   });
 
   const handleChange = (e) => {
@@ -76,13 +79,14 @@ export default () => {
       ...formData,
 
       // Trimming any whitespace
-      [e.target.name]: e.target.value.trim()
+      [e.target.name]: e.target.value
     });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
+    console.log(formData)
     const data = await fetch('https://integracion-apps.herokuapp.com/signeds', {
       method: 'POST',
       headers: {
@@ -93,8 +97,8 @@ export default () => {
     });
     const results = await data.json();
     console.log(results);
-    if(results.statusCode > 300)
-      seMessageError(results.message)
+    if (results.statusCode > 300) setMessageError(results.message);
+    else {setMessageError(false); setSuccess(true)};
 
     setLoading(false)
   }
@@ -110,7 +114,8 @@ export default () => {
           Nueva entrada
         </Typography>
         <form className={classes.form} onSubmit={onSubmit}>
-        { messageError && <FormHelperText>{messageError}</FormHelperText>  }
+          {messageError && <FormHelperText>{messageError}</FormHelperText>}
+          { success && <FormHelperText>Entrada registrada con exito =D</FormHelperText>}
           <TextField
             variant="outlined"
             margin="normal"
@@ -123,20 +128,20 @@ export default () => {
             autoComplete="legajo"
             autoFocus
           />
-
-          <Fade in={isManual}>
-            <TextField
-              id="datetime-local"
-              label="Fecha"
-              type="datetime-local"
-              defaultValue="2017-05-24T10:30"
-              className={classes.textField}
+          <FormControl required fullWidth variant="outlined" className={classes.formControl}>
+            <InputLabel id="demo-simple-select-outlined-label">Tipo</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
               onChange={handleChange}
-              name="fechaHora"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            /></Fade>
+              name="type"
+              value={formData.type}
+              label="tipo"
+            >
+              <MenuItem value="entry">Entrada</MenuItem>
+              <MenuItem value="egress">Salida</MenuItem>
+            </Select>
+          </FormControl>
           <div className={classes.wrapper}>
             <Button
               type="submit"
@@ -150,21 +155,6 @@ export default () => {
           </Button>
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
           </div>
-          <Grid container>
-            <Grid item xs>
-              <Fade in={!isManual}>
-                <Link href="#" variant="body2" onClick={() => setManual(true)}>
-                  Ingresar registro manual?
-              </Link>
-              </Fade>
-              <Fade in={isManual}>
-                <Link href="#" variant="body2" onClick={() => setManual(false)}>
-                  Cancelar <Close style={{ fontSize: 14, verticalAlign: "middle" }}></Close>
-                </Link>
-              </Fade>
-            </Grid>
-            
-          </Grid>
         </form>
       </div>
       <Box mt={8}>
