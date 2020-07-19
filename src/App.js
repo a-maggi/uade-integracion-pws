@@ -9,7 +9,7 @@ export default function App() {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/sign" component={SignPage} />
-          <Route exact path="/sign-in" component={SignInPage} />
+          <Route exact path="/login" component={SignInPage} />
         </Switch>
       </Router>
   );

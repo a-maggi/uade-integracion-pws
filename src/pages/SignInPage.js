@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { useHistory } from "react-router-dom";
+import { authenticationService } from '../services/Auth';
 
 function Copyright() {
   return (
@@ -93,25 +94,15 @@ export default () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
-    console.log(formData)
-    const data = await fetch('https://integracion-apps.herokuapp.com/auth/local', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
-    const results = await data.json();
-    console.log(results);
-    if (results.statusCode > 300) setMessageError(results.message)
-    else {
-      setMessageError(false)
-      setLoading(false)
-      // store user details and jwt token in local storage to keep user logged in between page refreshes
-      localStorage.setItem('user', JSON.stringify(results));
-      history.push("/");
-    }
+    await authenticationService.login(formData.identifier, formData.password)
+      .then(user => {
+        console.log("Redirijo a home privada");
+        history.push("/");
+      })
+      .catch(err => {
+        setLoading(false)
+        setMessageError(err)
+      });
   }
 
   return (
@@ -127,7 +118,7 @@ export default () => {
             Sign in
           </Typography>
           <form className={classes.form} onSubmit={onSubmit}>
-            {messageError && <FormHelperText>{Array.isArray(messageError) ? messageError[0].messages[0].message : messageError}</FormHelperText>}
+            {messageError && <FormHelperText>{messageError}</FormHelperText>}
             <TextField
               variant="outlined"
               margin="normal"
