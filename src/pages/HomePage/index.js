@@ -20,14 +20,15 @@ import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems } from '../components/listItems';
-import Chart from '../components/Chart';
-import Deposits from '../components/Deposits';
-import Orders from '../components/Orders';
+import { mainListItems } from '../../components/listItems';
+import Chart from '../../components/Chart';
+import Deposits from '../../components/Deposits';
+import Orders from '../../components/Orders';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { authenticationService } from '../services/Auth';
+import { authenticationService } from '../../services/Auth';
 import { useHistory } from "react-router-dom";
 
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -44,7 +45,7 @@ function Copyright() {
 const drawerWidth = 240;
 
 export default () => {
-
+  let match = useRouteMatch();
   let history = useHistory();
   const classes = useStyles();
   const [isLoaded, setLoaded] = React.useState(false);
@@ -158,26 +159,44 @@ export default () => {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
-            </Grid>
-          </Grid>
+          <Switch>
+            <Route path={`${match.path}/facturas`}>
+              <p>facturas</p>
+            </Route>
+            <Route path={`${match.path}/reportes`}>
+              <p>reportes</p>
+            </Route>
+            <Route path={`${match.path}/empleados`}>
+              <p>empleados</p>
+            </Route>
+            <Route path={`${match.path}/aprobaciones`}>
+              <p>aprobaciones</p>
+            </Route>
+            <Route path={match.path}>
+              <Grid container spacing={3}>
+                {/* Chart */}
+                <Grid item xs={12} md={8} lg={9}>
+                  <Paper className={fixedHeightPaper}>
+                    <Chart />
+                  </Paper>
+                </Grid>
+                {/* Recent Deposits */}
+                <Grid item xs={12} md={4} lg={3}>
+                  <Paper className={fixedHeightPaper}>
+                    <Deposits />
+                  </Paper>
+                </Grid>
+                {/* Recent Orders */}
+                <Grid item xs={12}>
+                  <Paper className={classes.paper}>
+                    <Orders />
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Route>
+          </Switch>
+
+
           <Box pt={4}>
             <Copyright />
           </Box>

@@ -97,7 +97,7 @@ export default () => {
     await authenticationService.login(formData.identifier, formData.password)
       .then(user => {
         console.log("Redirijo a home privada");
-        history.push("/");
+        history.push("/panel");
       })
       .catch(err => {
         setLoading(false)
