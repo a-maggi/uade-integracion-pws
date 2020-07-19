@@ -97,8 +97,12 @@ export default () => {
     });
     const results = await data.json();
     console.log(results);
-    if (results.statusCode > 300) setMessageError(results.message);
-    else {setMessageError(false); setSuccess(true)};
+    if (results.statusCode > 300) 
+      setMessageError(results.message);
+    else {
+      setMessageError(false); 
+      setSuccess(true)
+    };
 
     setLoading(false)
   }

@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import { useHistory } from "react-router-dom";
 
 function Copyright() {
   return (
@@ -70,9 +71,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
+  let history = useHistory();
+
   const classes = useStyles();
   const [loading, setLoading] = React.useState(false);
-  const [messageError, seMessageError] = React.useState(false);
+  const [messageError, setMessageError] = React.useState(false);
   const [formData, updateFormData] = React.useState({
     identifier: "",
     password: ""
@@ -101,9 +104,14 @@ export default () => {
     });
     const results = await data.json();
     console.log(results);
-    if (results.statusCode > 300) seMessageError(results.message)
-    else seMessageError(false)
-    setLoading(false)
+    if (results.statusCode > 300) setMessageError(results.message)
+    else {
+      setMessageError(false)
+      setLoading(false)
+      // store user details and jwt token in local storage to keep user logged in between page refreshes
+      localStorage.setItem('user', JSON.stringify(results));
+      history.push("/");
+    }
   }
 
   return (
@@ -119,7 +127,7 @@ export default () => {
             Sign in
           </Typography>
           <form className={classes.form} onSubmit={onSubmit}>
-            {messageError && <FormHelperText>{Array.isArray(messageError)? messageError[0].messages[0].message : messageError }</FormHelperText>}
+            {messageError && <FormHelperText>{Array.isArray(messageError) ? messageError[0].messages[0].message : messageError}</FormHelperText>}
             <TextField
               variant="outlined"
               margin="normal"
