@@ -82,8 +82,8 @@ export default () => {
 
 
   React.useEffect(() => {
-    setLoaded(true);
     setUser(authenticationService.user);
+    setLoaded(true);
   }, []);
 
 
