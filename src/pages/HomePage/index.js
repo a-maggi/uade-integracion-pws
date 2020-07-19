@@ -27,8 +27,10 @@ import Orders from '../../components/Orders';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { authenticationService } from '../../services/Auth';
 import { useHistory } from "react-router-dom";
-
 import { Switch, Route, useRouteMatch } from "react-router-dom";
+
+import EmployeesPage from "./subPages/EmployeesPage"
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -167,7 +169,7 @@ export default () => {
               <p>reportes</p>
             </Route>
             <Route path={`${match.path}/empleados`}>
-              <p>empleados</p>
+              <EmployeesPage></EmployeesPage>
             </Route>
             <Route path={`${match.path}/aprobaciones`}>
               <p>aprobaciones</p>
@@ -270,6 +272,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     height: '100vh',
     overflow: 'auto',
+    backgroundColor: '#f5f5f5'
   },
   container: {
     paddingTop: theme.spacing(4),
