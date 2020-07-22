@@ -88,7 +88,7 @@ export default () => {
 
 
   React.useEffect(() => {
-    if (!user && isLoaded) history.push('/login');
+    if (!user && isLoaded) history.push('/');
   }, [user]);
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);

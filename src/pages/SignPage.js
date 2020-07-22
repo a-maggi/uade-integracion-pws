@@ -70,8 +70,7 @@ export default () => {
   const [messageError, setMessageError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [formData, updateFormData] = React.useState({
-    taxNumber: "",
-    type: "entry"
+    taxNumber: ""
   });
 
   const handleChange = (e) => {
@@ -132,20 +131,6 @@ export default () => {
             autoComplete="legajo"
             autoFocus
           />
-          <FormControl required fullWidth variant="outlined" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-outlined-label">Tipo</InputLabel>
-            <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              onChange={handleChange}
-              name="type"
-              value={formData.type}
-              label="tipo"
-            >
-              <MenuItem value="entry">Entrada</MenuItem>
-              <MenuItem value="egress">Salida</MenuItem>
-            </Select>
-          </FormControl>
           <div className={classes.wrapper}>
             <Button
               type="submit"
