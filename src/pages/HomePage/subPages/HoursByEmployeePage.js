@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { DashboardService } from '../../../services/Dashboard';
-import MaterialTable from 'material-table';
+import MaterialTable, { MTableToolbar } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -25,6 +25,9 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 const tableIcons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -67,8 +70,33 @@ const useStyles = makeStyles({
   table: {
     minWidth: 700,
   },
+  root: {
+    padding: 10, paddingLeft: 25,
+    flexGrow: 1,
+  },
 });
 
+
+const formatData = (raw) => {
+  let data = [];
+  raw.forEach(e => {
+    if (!e || e === "") return;
+    let employee = data.find(x => x.taxNumber === e.employee.taxNumber);
+    if (employee == undefined) {
+      data.push({
+        firstName: e.employee.firstName,
+        lastName: e.employee.lastName,
+        taxNumber: e.employee.taxNumber,
+        hoursPerMonth: e.employee.taxNumber,
+        hoursInCompany: 0
+      })
+      employee = data.find(x => x.taxNumber === e.employee.taxNumber);
+    }
+    employee.hoursInCompany += e.hoursInCompany;
+
+  })
+  return data;
+}
 
 export default () => {
   const classes = useStyles();
@@ -79,10 +107,7 @@ export default () => {
     columns: [
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
-      { title: 'Fecha ingreso', field: 'startDate', type: 'date' },
-      { title: 'Documento', field: 'document', type: 'numeric' },
-      { title: 'Legajo', field: 'taxNumber', type: 'string' },
-      { title: 'Horas a trabajar', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Horas laburadas', field: 'hoursInCompany', type: 'numeric' }
     ],
     data: [],
   });
@@ -94,12 +119,21 @@ export default () => {
     setLoaded(true);
     await DashboardService.fetchEmployees()
       .then(res => {
-        console.log(res);
         setEmployee(res);
+      })
+      .catch(err => {
+        setMessageError(err)
+      });
+
+    await DashboardService.fetchHours()
+      .then(res => {
+        console.log("res", res);
+        const rows = formatData(res);
+        console.log("rows", rows);
         setState(
           {
             ...state,
-            "data": res
+            "data": rows
           }
         )
       })
@@ -134,6 +168,48 @@ export default () => {
               filterTooltip: 'Filtrar'
             }
           }
+        }}
+        components={{
+          Toolbar: props => (
+            <div>
+              <MTableToolbar {...props} />
+              <Grid container className={classes.root} spacing={2}>
+                <Grid item xs={4}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    options={employeeRow}
+                    getOptionLabel={(option) => option.firstName}
+                    style={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Empleado" variant="outlined" />}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    id="datetime-local"
+                    label="Fecha desde"
+                    type="datetime-local"
+                    defaultValue="2017-05-24T10:30"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    id="datetime-local"
+                    label="Fecha hasta"
+                    type="datetime-local"
+                    defaultValue="2017-05-24T10:30"
+                    className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </div>
+          )
         }}
         icons={tableIcons}
         title="Empleados"

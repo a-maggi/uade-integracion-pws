@@ -10,6 +10,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -20,7 +21,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems } from '../../components/listItems';
+import MainListItems from '../../components/listItems';
 import Chart from '../../components/Chart';
 import Deposits from '../../components/Deposits';
 import Orders from '../../components/Orders';
@@ -30,6 +31,8 @@ import { useHistory } from "react-router-dom";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import EmployeesPage from "./subPages/EmployeesPage"
+import HoursPage from "./subPages/HoursPage"
+import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
 
 function Copyright() {
   return (
@@ -112,16 +115,16 @@ export default () => {
           </Typography>
           {user && (
             <div>
-              <IconButton
+              <Button
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
               >
-                <Typography>{user.user.username} </Typography>
+                <Typography>{user.user.username}	&nbsp;</Typography>
                 <AccountCircle />
-              </IconButton>
+              </Button>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -156,7 +159,7 @@ export default () => {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List><MainListItems></MainListItems></List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -165,8 +168,11 @@ export default () => {
             <Route path={`${match.path}/facturas`}>
               <p>facturas</p>
             </Route>
-            <Route path={`${match.path}/reportes`}>
-              <p>reportes</p>
+            <Route path={`${match.path}/reporte-empleados`}>
+              <HoursByEmployeePage></HoursByEmployeePage>
+            </Route>
+            <Route path={`${match.path}/reporte-horas`}>
+              <HoursPage></HoursPage>
             </Route>
             <Route path={`${match.path}/empleados`}>
               <EmployeesPage></EmployeesPage>

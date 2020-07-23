@@ -24,6 +24,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import { format, compareAsc } from 'date-fns'
+
 
 const tableIcons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -77,12 +79,11 @@ export default () => {
   const [messageError, setMessageError] = React.useState(false);
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Nombre', field: 'firstName' },
-      { title: 'Apellido', field: 'lastName' },
-      { title: 'Fecha ingreso', field: 'startDate', type: 'date' },
-      { title: 'Documento', field: 'document', type: 'numeric' },
-      { title: 'Legajo', field: 'taxNumber', type: 'string' },
-      { title: 'Horas a trabajar', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Entrada', field: 'signedDatetime',render: rowData => (format(new Date(rowData.entry.signedDatetime), 'MM/dd/yyyy hh:mm')), type: 'datetime' },
+      { title: 'Salida', field: 'signedDatetime',render: rowData => (format(new Date(rowData.egress.signedDatetime), 'MM/dd/yyyy hh:mm')), type: 'datetime' },
+      { title: 'Nombre', field: 'firstName',render: rowData => (rowData.employee.firstName) },
+      { title: 'Apellido', field: 'lastName',render: rowData => (rowData.employee.lastName) },
+      { title: 'Horas laburadas', field: 'hoursInCompany', type: 'numeric' }
     ],
     data: [],
   });
@@ -92,7 +93,7 @@ export default () => {
 
   const fetch = async () => {
     setLoaded(true);
-    await DashboardService.fetchEmployees()
+    await DashboardService.fetchHours()
       .then(res => {
         console.log(res);
         setEmployee(res);
