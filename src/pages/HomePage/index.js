@@ -54,7 +54,7 @@ export default () => {
   let history = useHistory();
   const classes = useStyles();
   const [isLoaded, setLoaded] = React.useState(false);
-  const [user, setUser] = React.useState(false);
+  const [user, setUser] = React.useState(authenticationService.user);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(true);
@@ -79,19 +79,20 @@ export default () => {
 
   const handleLogout = () => {
     handleClose();
-    authenticationService.logout();
     setUser(false)
+    authenticationService.logout();
   };
 
 
   React.useEffect(() => {
-    setUser(authenticationService.user);
+   // setUser(authenticationService.user);
     setLoaded(true);
+    if (!user || user == null) history.push('/');
   }, []);
 
 
   React.useEffect(() => {
-    if (!user && isLoaded) history.push('/');
+    if (!user) history.push('/');
   }, [user]);
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
