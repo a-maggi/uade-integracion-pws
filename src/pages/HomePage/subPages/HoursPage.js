@@ -137,7 +137,7 @@ export default () => {
           }
         }}
         icons={tableIcons}
-        title="Empleados"
+        title="Fichadas"
         columns={state.columns}
         data={state.data}
         editable={{

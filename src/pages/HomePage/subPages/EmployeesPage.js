@@ -142,38 +142,54 @@ export default () => {
         editable={{
           onRowAdd: (newData) =>
             new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data.push(newData);
-                  return { ...prevState, data };
+              DashboardService.createEmployee(newData)
+                .then(res => {
+                  resolve();
+                  setState((prevState) => {
+                    const data = [...prevState.data];
+                    data.push(newData);
+                    return { ...prevState, data };
+                  });
+                })
+                .catch(err => {
+                  resolve();
+                  setMessageError(err)
                 });
-              }, 600);
             }),
           onRowUpdate: (newData, oldData) =>
             new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                if (oldData) {
-                  setState((prevState) => {
-                    const data = [...prevState.data];
-                    data[data.indexOf(oldData)] = newData;
-                    return { ...prevState, data };
-                  });
-                }
-              }, 600);
+              console.log(oldData);
+              DashboardService.modifyEmployee(newData)
+                .then(res => {
+                  resolve();
+                  if (oldData) {
+                    setState((prevState) => {
+                      const data = [...prevState.data];
+                      data[data.indexOf(oldData)] = newData;
+                      return { ...prevState, data };
+                    });
+                  }
+                })
+                .catch(err => {
+                  resolve();
+                  setMessageError(err)
+                });
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data.splice(data.indexOf(oldData), 1);
-                  return { ...prevState, data };
+              DashboardService.removeEmployee(oldData)
+                .then(res => {
+                  resolve();
+                  setState((prevState) => {
+                    const data = [...prevState.data];
+                    data.splice(data.indexOf(oldData), 1);
+                    return { ...prevState, data };
+                  });
+                })
+                .catch(err => {
+                  resolve();
+                  setMessageError(err)
                 });
-              }, 600);
             }),
         }}
       />

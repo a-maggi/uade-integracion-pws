@@ -212,7 +212,7 @@ export default () => {
           )
         }}
         icons={tableIcons}
-        title="Empleados"
+        title="Horas por empleado"
         columns={state.columns}
         data={state.data}
         editable={{
