@@ -73,13 +73,13 @@ export default () => {
             <ListItemIcon>
               <InsertDriveFile />
             </ListItemIcon>
-            <ListItemText primary="Fichadas" />
+            <ListItemText primary="Horas trabajadas" />
           </ListItem>
           <ListItem button className={classes.nested} component={Link} to="/panel/reporte-horas">
             <ListItemIcon>
               <InsertDriveFile />
             </ListItemIcon>
-            <ListItemText primary="Horas" />
+            <ListItemText primary="Fichadas" />
           </ListItem>
         </List>
       </Collapse>

@@ -87,7 +87,7 @@ const formatData = (raw) => {
         firstName: e.employee.firstName,
         lastName: e.employee.lastName,
         taxNumber: e.employee.taxNumber,
-        hoursPerMonth: e.employee.taxNumber,
+        hoursPerMonth: e.employee.hoursPerMonth,
         hoursInCompany: 0
       })
       employee = data.find(x => x.taxNumber === e.employee.taxNumber);
@@ -107,7 +107,8 @@ export default () => {
     columns: [
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
-      { title: 'Horas laburadas', field: 'hoursInCompany', type: 'numeric' }
+      { title: 'Horas a cumplir', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Horas cumplidas', field: 'hoursInCompany', type: 'numeric' }
     ],
     data: [],
   });
@@ -159,11 +160,11 @@ export default () => {
             nRowsSelected: '{0} empleado(s) seleccionados'
           },
           header: {
-            actions: 'Accion'
+            actions: 'Acciones'
           },
           body: {
             emptyDataSourceMessage: 'Sin empleados a mostrar',
-            editRow: { deleteText: 'Estas seguro de eliminar este empleado?' },
+            editRow: { deleteText: '¿Estás seguro de eliminar este empleado?' },
             filterRow: {
               filterTooltip: 'Filtrar'
             }
@@ -178,7 +179,7 @@ export default () => {
                   <Autocomplete
                     id="combo-box-demo"
                     options={employeeRow}
-                    getOptionLabel={(option) => option.firstName}
+                    getOptionLabel={(option) => option.lastName + ", " + option.firstName}
                     style={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Empleado" variant="outlined" />}
                   />
@@ -188,7 +189,7 @@ export default () => {
                     id="datetime-local"
                     label="Fecha desde"
                     type="datetime-local"
-                    defaultValue="2017-05-24T10:30"
+                    defaultValue="2020-07-01T00:00"
                     className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
@@ -200,7 +201,7 @@ export default () => {
                     id="datetime-local"
                     label="Fecha hasta"
                     type="datetime-local"
-                    defaultValue="2017-05-24T10:30"
+                    defaultValue="2020-07-30T23:59"
                     className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
@@ -212,7 +213,7 @@ export default () => {
           )
         }}
         icons={tableIcons}
-        title="Horas por empleado"
+        title="Horas trabajadas"
         columns={state.columns}
         data={state.data}
         editable={{
