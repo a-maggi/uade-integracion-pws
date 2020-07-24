@@ -82,7 +82,7 @@ export default () => {
       { title: 'Fecha ingreso', field: 'startDate', type: 'date' },
       { title: 'Documento', field: 'document', type: 'numeric' },
       { title: 'Legajo', field: 'taxNumber', type: 'string' },
-      { title: 'Horas a trabajar', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Horas a cumplir', field: 'hoursPerMonth', type: 'numeric' },
     ],
     data: [],
   });
@@ -125,7 +125,7 @@ export default () => {
             nRowsSelected: '{0} empleado(s) seleccionados'
           },
           header: {
-            actions: 'Accion'
+            actions: 'Acciones'
           },
           body: {
             emptyDataSourceMessage: 'Sin empleados a mostrar',
