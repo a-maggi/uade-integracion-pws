@@ -13,7 +13,7 @@ export const DashboardService = {
 function fetchEmployees() {
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user.jwt},
+    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
   };
 
   return fetch(`${REACT_APP_apiUrl}/employees`, requestOptions)
@@ -26,7 +26,7 @@ function fetchEmployees() {
 function modifyEmployee(data) {
   const requestOptions = {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user.jwt},
+    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
     body: JSON.stringify({
       "firstName": data.firstName,
       "lastName": data.lastName,
@@ -47,7 +47,7 @@ function modifyEmployee(data) {
 function createEmployee(data) {
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user.jwt},
+    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
     body: JSON.stringify({
       "firstName": data.firstName,
       "lastName": data.lastName,
@@ -68,7 +68,7 @@ function createEmployee(data) {
 function removeEmployee(data) {
   const requestOptions = {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user.jwt},
+    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
   };
 
   return fetch(`${REACT_APP_apiUrl}/employees/${data.id}`, requestOptions)
@@ -82,7 +82,7 @@ function removeEmployee(data) {
 function fetchHours() {
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user.jwt},
+    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
   };
 
   return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)

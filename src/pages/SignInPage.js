@@ -91,6 +91,16 @@ export default () => {
     });
   };
 
+  
+  React.useEffect(() => {
+    if(authenticationService.user()){
+      console.log(authenticationService.user())
+      console.log("en login ok")
+      history.push("/panel");
+    }
+  }, []);
+
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
