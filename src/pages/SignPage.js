@@ -11,7 +11,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+//import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Alert from '@material-ui/lab/Alert';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -21,14 +23,14 @@ import Fade from '@material-ui/core/Fade';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-import { DashboardService } from '../services/Dashboard';
+import { PublicService } from '../services/Public';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+        check-in-tegracion
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -72,9 +74,15 @@ export default () => {
   const [loading, setLoading] = React.useState(false);
   const [messageError, setMessageError] = React.useState(false);
   const [customers, setCustomers] = React.useState([]);
+  const [successMessage, setSuccessMessage] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+
+  const [customerName, setCustomerName] = React.useState('');
+  const [customerValue, setCustomerValue] = React.useState(null);
+
   const [formData, updateFormData] = React.useState({
-    taxNumber: ""
+    taxNumber: "",
+    customer: ""
   });
 
   const handleChange = (e) => {
@@ -91,7 +99,7 @@ export default () => {
   }, []);
 
   const fetch = async () => {
-    await DashboardService.fetchCustomers()
+    await PublicService.fetchCustomers()
       .then(res => {
         setCustomers(res);
       })
@@ -102,26 +110,18 @@ export default () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    console.log(formData)
-    const data = await fetch('https://integracion-apps.herokuapp.com/signeds', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
-    const results = await data.json();
-    console.log(results);
-    if (results.statusCode > 300)
-      setMessageError(results.message);
-    else {
-      setMessageError(false);
-      setSuccess(true)
-    };
-
-    setLoading(false)
+    setLoading(true);
+    await PublicService.NewSign(formData)
+      .then(results => {
+        setMessageError(false);
+        let movType = results.type === "egress" ? "Salida " : "Entrada ";
+        setSuccessMessage(movType + " registrada para " + results.employee.firstName + " " + results.employee.lastName);
+        setSuccess(true);
+      })
+      .catch(err => {
+        setMessageError(err.message)
+      });
+    setLoading(false);
   }
 
   return (
@@ -129,18 +129,31 @@ export default () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
+          <QueryBuilderIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
           Nueva fichada
         </Typography>
         <form className={classes.form} onSubmit={onSubmit}>
           {messageError && <FormHelperText>{messageError}</FormHelperText>}
-          {success && <FormHelperText>Fichada registrada con exito =D</FormHelperText>}
+          {success && <FormHelperText>{successMessage}</FormHelperText>}
           <Autocomplete
             id="combo-box-demo"
             options={customers}
-            getOptionLabel={(option) => option.name }
+            onChange={(event, newValue) => {
+              updateFormData({
+                ...formData,
+                // Trimming any whitespace
+                'customer': newValue ? newValue.id : false
+              });
+              setCustomerValue(newValue);
+            }}
+            onInputChange={(event, newInputValue) => {
+              setCustomerName(newInputValue);
+            }}
+            value={customerValue}
+            inputValue={customerName}
+            getOptionLabel={(option) => option.name}
             renderInput={(params) => <TextField {...params} label="Empresa" variant="outlined" />}
           />
           <TextField
