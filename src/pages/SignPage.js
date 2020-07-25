@@ -18,8 +18,11 @@ import Container from '@material-ui/core/Container';
 import { green } from '@material-ui/core/colors';
 import { Close } from '@material-ui/icons';
 import Fade from '@material-ui/core/Fade';
-
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormHelperText from '@material-ui/core/FormHelperText';
+
+import { DashboardService } from '../services/Dashboard';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -68,6 +71,7 @@ export default () => {
   const classes = useStyles();
   const [loading, setLoading] = React.useState(false);
   const [messageError, setMessageError] = React.useState(false);
+  const [customers, setCustomers] = React.useState([]);
   const [success, setSuccess] = React.useState(false);
   const [formData, updateFormData] = React.useState({
     taxNumber: ""
@@ -81,6 +85,20 @@ export default () => {
       [e.target.name]: e.target.value
     });
   };
+
+  React.useEffect(() => {
+    fetch();
+  }, []);
+
+  const fetch = async () => {
+    await DashboardService.fetchCustomers()
+      .then(res => {
+        setCustomers(res);
+      })
+      .catch(err => {
+        setMessageError(err.message)
+      });
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -96,10 +114,10 @@ export default () => {
     });
     const results = await data.json();
     console.log(results);
-    if (results.statusCode > 300) 
+    if (results.statusCode > 300)
       setMessageError(results.message);
     else {
-      setMessageError(false); 
+      setMessageError(false);
       setSuccess(true)
     };
 
@@ -114,11 +132,17 @@ export default () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Nueva entrada
+          Nueva fichada
         </Typography>
         <form className={classes.form} onSubmit={onSubmit}>
           {messageError && <FormHelperText>{messageError}</FormHelperText>}
-          { success && <FormHelperText>Entrada registrada con exito =D</FormHelperText>}
+          {success && <FormHelperText>Fichada registrada con exito =D</FormHelperText>}
+          <Autocomplete
+            id="combo-box-demo"
+            options={customers}
+            getOptionLabel={(option) => option.name }
+            renderInput={(params) => <TextField {...params} label="Empresa" variant="outlined" />}
+          />
           <TextField
             variant="outlined"
             margin="normal"

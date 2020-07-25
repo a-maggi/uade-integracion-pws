@@ -7,13 +7,14 @@ export const DashboardService = {
   fetchHours,
   modifyEmployee,
   createEmployee,
-  removeEmployee
+  removeEmployee,
+  fetchCustomers
 };
 
 function fetchEmployees() {
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
 
   return fetch(`${REACT_APP_apiUrl}/employees`, requestOptions)
@@ -23,10 +24,22 @@ function fetchEmployees() {
     });
 }
 
+function fetchCustomers() {
+  const requestOptions = {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/customers`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
 function modifyEmployee(data) {
   const requestOptions = {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
     body: JSON.stringify({
       "firstName": data.firstName,
       "lastName": data.lastName,
@@ -47,7 +60,7 @@ function modifyEmployee(data) {
 function createEmployee(data) {
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
     body: JSON.stringify({
       "firstName": data.firstName,
       "lastName": data.lastName,
@@ -68,7 +81,7 @@ function createEmployee(data) {
 function removeEmployee(data) {
   const requestOptions = {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
 
   return fetch(`${REACT_APP_apiUrl}/employees/${data.id}`, requestOptions)
@@ -79,15 +92,33 @@ function removeEmployee(data) {
 }
 
 
-function fetchHours() {
+function fetchHours(filters) {
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json',  Authorization: 'Bearer '+authenticationService.user().jwt},
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
-
-  return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)
-    .then(handleResponse)
-    .then(res => {
-      return res;
-    });
+  if (filters.employee && filters.dateFrom && filters.dateTo)
+    return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}&employee=${filters.employee}`, requestOptions)
+      .then(handleResponse)
+      .then(res => {
+        return res;
+      });
+  else if (filters.dateFrom && filters.dateTo)
+    return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}`, requestOptions)
+      .then(handleResponse)
+      .then(res => {
+        return res;
+      });
+  else if (filters.employee)
+    return fetch(`${REACT_APP_apiUrl}/hours?employee=${filters.employee}`, requestOptions)
+      .then(handleResponse)
+      .then(res => {
+        return res;
+      });
+  else
+    return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)
+      .then(handleResponse)
+      .then(res => {
+        return res;
+      });
 }

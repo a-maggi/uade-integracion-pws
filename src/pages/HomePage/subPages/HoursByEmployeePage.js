@@ -1,7 +1,7 @@
 import React from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
+
+import Button from '@material-ui/core/Button';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -101,8 +101,10 @@ const formatData = (raw) => {
 export default () => {
   const classes = useStyles();
   const [isLoaded, setLoaded] = React.useState(true);
-  const [employeeRow, setEmployee] = React.useState(false);
+  const [employeeRow, setEmployee] = React.useState([]);
   const [messageError, setMessageError] = React.useState(false);
+  const [employeeValue, setEmployeeValue] = React.useState('');
+  const [valueEmployee, setValueEmployee] = React.useState(null);
   const [state, setState] = React.useState({
     columns: [
       { title: 'Nombre', field: 'firstName' },
@@ -112,12 +114,23 @@ export default () => {
     ],
     data: [],
   });
+  const [filters, setFilters] = React.useState({
+    employee: '',
+    dateFrom: false,
+    dateTo: false
+  });
   React.useEffect(() => {
     fetch();
   }, []);
 
   const fetch = async () => {
     setLoaded(true);
+    await fetchEmployees();
+    await fetchHours();
+    setLoaded(false);
+  }
+
+  const fetchEmployees = async () => {
     await DashboardService.fetchEmployees()
       .then(res => {
         setEmployee(res);
@@ -125,8 +138,10 @@ export default () => {
       .catch(err => {
         setMessageError(err)
       });
+  }
 
-    await DashboardService.fetchHours()
+  const fetchHours = async () => {
+    await DashboardService.fetchHours(filters)
       .then(res => {
         console.log("res", res);
         const rows = formatData(res);
@@ -141,6 +156,21 @@ export default () => {
       .catch(err => {
         setMessageError(err)
       });
+  }
+
+  
+  const handleChange = (e) => {
+    setFilters({
+      ...filters,
+      // Trimming any whitespace
+      [e.target.name]: e.target.value
+    });
+  };
+
+
+  const onFilter = async () => {
+    setLoaded(true);
+    await fetchHours();
     setLoaded(false);
   }
 
@@ -157,6 +187,7 @@ export default () => {
             labelDisplayedRows: '{from}-{to} de {count}'
           },
           toolbar: {
+            searchPlaceholder: "Buscar..",
             nRowsSelected: '{0} empleado(s) seleccionados'
           },
           header: {
@@ -174,39 +205,67 @@ export default () => {
           Toolbar: props => (
             <div>
               <MTableToolbar {...props} />
-              <Grid container className={classes.root} spacing={2}>
-                <Grid item xs={4}>
+              <Grid container className={classes.root} justify="space-around">
+                <Grid item >
                   <Autocomplete
                     id="combo-box-demo"
+                    value={valueEmployee}
                     options={employeeRow}
+                    style={{ minWidth: 200 }}
+                    onChange={(event, newValue) => {
+                      setFilters({
+                        ...filters,
+                        // Trimming any whitespace
+                        'employee': newValue? newValue.id : false
+                      });
+                      setValueEmployee(newValue);
+                    }}
+                    onInputChange={(event, newInputValue) => {
+                      setEmployeeValue(newInputValue);
+                    }}
+                    inputValue={employeeValue}
                     getOptionLabel={(option) => option.lastName + ", " + option.firstName}
-                    style={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Empleado" variant="outlined" />}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item >
                   <TextField
-                    id="datetime-local"
+                    id="date"
                     label="Fecha desde"
-                    type="datetime-local"
-                    defaultValue="2020-07-01T00:00"
+                    type="date"
+                    name="dateFrom"
+                    value={filters.dateFrom}
+                    onChange={handleChange}
                     className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item>
                   <TextField
-                    id="datetime-local"
+                    id="date"
                     label="Fecha hasta"
-                    type="datetime-local"
-                    defaultValue="2020-07-30T23:59"
+                    type="date"
+                    name="dateTo"
+                    value={filters.dateTo}
+                    onChange={handleChange}
                     className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={onFilter}
+                  >
+                    Filtrar
+                  </Button>
                 </Grid>
               </Grid>
             </div>
@@ -216,43 +275,6 @@ export default () => {
         title="Horas trabajadas"
         columns={state.columns}
         data={state.data}
-        editable={{
-          onRowAdd: (newData) =>
-            new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data.push(newData);
-                  return { ...prevState, data };
-                });
-              }, 600);
-            }),
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                if (oldData) {
-                  setState((prevState) => {
-                    const data = [...prevState.data];
-                    data[data.indexOf(oldData)] = newData;
-                    return { ...prevState, data };
-                  });
-                }
-              }, 600);
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve) => {
-              setTimeout(() => {
-                resolve();
-                setState((prevState) => {
-                  const data = [...prevState.data];
-                  data.splice(data.indexOf(oldData), 1);
-                  return { ...prevState, data };
-                });
-              }, 600);
-            }),
-        }}
       />
     </React.Fragment>
   );
