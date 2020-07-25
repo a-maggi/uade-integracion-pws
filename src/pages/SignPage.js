@@ -11,7 +11,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+//import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Alert from '@material-ui/lab/Alert';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -24,8 +26,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="#">
+        check-in-tegracion
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -68,6 +70,7 @@ export default () => {
   const classes = useStyles();
   const [loading, setLoading] = React.useState(false);
   const [messageError, setMessageError] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [formData, updateFormData] = React.useState({
     taxNumber: ""
@@ -99,8 +102,10 @@ export default () => {
     if (results.statusCode > 300) 
       setMessageError(results.message);
     else {
-      setMessageError(false); 
-      setSuccess(true)
+      setMessageError(false);
+      let movType = results.type === "egress" ? "Salida " : "Entrada ";
+      setSuccessMessage(movType + " registrada para " + results.employee.firstName + " " + results.employee.lastName);
+      setSuccess(true);
     };
 
     setLoading(false)
@@ -111,14 +116,14 @@ export default () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
+          <QueryBuilderIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Nueva entrada
+          CONTROL DE PRESENTISMO
         </Typography>
         <form className={classes.form} onSubmit={onSubmit}>
-          {messageError && <FormHelperText>{messageError}</FormHelperText>}
-          { success && <FormHelperText>Entrada registrada con exito =D</FormHelperText>}
+          {messageError && <Alert severity="error">{messageError}</Alert>}
+          { success && <Alert severity="success">{successMessage}</Alert>}
           <TextField
             variant="outlined"
             margin="normal"
