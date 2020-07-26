@@ -143,9 +143,7 @@ export default () => {
   const fetchHours = async () => {
     await DashboardService.fetchHours(filters)
       .then(res => {
-        console.log("res", res);
         const rows = formatData(res);
-        console.log("rows", rows);
         setState(
           {
             ...state,

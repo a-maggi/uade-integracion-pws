@@ -95,7 +95,7 @@ export default () => {
     setLoaded(true);
     await DashboardService.fetchHours()
       .then(res => {
-        console.log(res);
+        console.log(123);
         setEmployee(res);
         setState(
           {
