@@ -33,6 +33,7 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 import EmployeesPage from "./subPages/EmployeesPage"
 import HoursPage from "./subPages/HoursPage"
 import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
+import ApprovalsPage from "./subPages/ApprovalsPage"
 
 function Copyright() {
   return (
@@ -179,7 +180,7 @@ export default () => {
               <EmployeesPage></EmployeesPage>
             </Route>
             <Route path={`${match.path}/aprobaciones`}>
-              <p>aprobaciones</p>
+              <ApprovalsPage></ApprovalsPage>
             </Route>
             <Route path={match.path}>
               <Grid container spacing={3}>
