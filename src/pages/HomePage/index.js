@@ -13,8 +13,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -22,14 +20,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MainListItems from '../../components/listItems';
-import Chart from '../../components/Chart';
-import Deposits from '../../components/Deposits';
-import Orders from '../../components/Orders';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { authenticationService } from '../../services/Auth';
 import { useHistory } from "react-router-dom";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
+import HomePage from "./subPages/HomePage"
+//import HomeBasicPage from "./subPages/HomeBasicPage"
 import EmployeesPage from "./subPages/EmployeesPage"
 import HoursPage from "./subPages/HoursPage"
 import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
@@ -86,9 +83,13 @@ export default () => {
 
 
   React.useEffect(() => {
-   // setUser(authenticationService.user);
+    // setUser(authenticationService.user);
     setLoaded(true);
     if (!user || user == null) history.push('/');
+
+
+
+
   }, []);
 
 
@@ -183,26 +184,7 @@ export default () => {
               <ApprovalsPage></ApprovalsPage>
             </Route>
             <Route path={match.path}>
-              <Grid container spacing={3}>
-                {/* Chart */}
-                <Grid item xs={12} md={8} lg={9}>
-                  <Paper className={fixedHeightPaper}>
-                    <Chart />
-                  </Paper>
-                </Grid>
-                {/* Recent Deposits */}
-                <Grid item xs={12} md={4} lg={3}>
-                  <Paper className={fixedHeightPaper}>
-                    <Deposits />
-                  </Paper>
-                </Grid>
-                {/* Recent Orders */}
-                <Grid item xs={12}>
-                  <Paper className={classes.paper}>
-                    <Orders />
-                  </Paper>
-                </Grid>
-              </Grid>
+              <HomePage></HomePage>
             </Route>
           </Switch>
 
