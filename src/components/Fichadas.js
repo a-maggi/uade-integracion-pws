@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
+import { Link } from "react-router-dom";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { DashboardService } from '../services/Dashboard';
@@ -64,7 +64,7 @@ export default function Orders() {
           direction="column"
           alignItems="center"
           justify="center"
-          style={{ minHeight: '100vh' }}
+          style={{ minHeight: '5vh' }}
         ><CircularProgress size={24} /></Grid> :
         data.length > 0 ? 
         <Table size="small">
@@ -88,7 +88,7 @@ export default function Orders() {
           </TableBody>
         </Table> : <div>Sin fichadas registradas.</div>}
       <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
+        <Link color="primary" to="/panel/reporte-horas">
           Ver más fichadas
         </Link>
       </div>

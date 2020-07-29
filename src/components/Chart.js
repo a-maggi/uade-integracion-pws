@@ -55,7 +55,7 @@ export default function Chart() {
       .then(res => {
         console.log(res)
         const rows = formatData(res);
-        const maps = rows.map((e) => (createData(e.date, Math.round(e.hours / 60  * 100)/100)));
+        const maps = rows.map((e) => (createData(e.date, Math.round(e.hours / 60 * 100) / 100)));
         setData(maps);
 
       })
@@ -67,42 +67,45 @@ export default function Chart() {
   return (
     <React.Fragment>
       <Title>Esta semana</Title>
-      <ResponsiveContainer width="100%" height={150} minWidth="0">
-        {isLoaded ?
-          <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justify="center"
-            style={{ minHeight: '100vh' }}
-          ><CircularProgress size={24} /></Grid> :
-          
-            dataGraph ?
-          
-          <LineChart
-            data={dataGraph}
-            margin={{
-              top: 16,
-              right: 16,
-              bottom: 0,
-              left: 24,
-            }}
-          >
-            <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
-            <YAxis stroke={theme.palette.text.secondary}>
-              <Label
-                angle={270}
-                position="left"
-                style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
-              >
-                Horas
+      {isLoaded ?
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justify="center"
+          style={{ minHeight: '10vh' }}
+        >
+          <CircularProgress size={24} />
+        </Grid> :
+
+        dataGraph ?
+
+          <ResponsiveContainer width="100%" height={150} minWidth="0">
+            <LineChart
+              data={dataGraph}
+              margin={{
+                top: 16,
+                right: 16,
+                bottom: 0,
+                left: 24,
+              }}
+            >
+              <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
+              <YAxis stroke={theme.palette.text.secondary}>
+                <Label
+                  angle={270}
+                  position="left"
+                  style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
+                >
+                  Horas
           </Label>
-            </YAxis>
-            <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.main} dot={false} />
-          </LineChart> : <div>No hay registros</div>
-        }
-      </ResponsiveContainer>
+              </YAxis>
+              <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.main} dot={false} />
+            </LineChart>
+          </ResponsiveContainer> : <div>No hay registros</div>
+      }
+
     </React.Fragment>
   );
 }

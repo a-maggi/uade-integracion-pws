@@ -7,16 +7,17 @@ import Paper from '@material-ui/core/Paper';
 import { DashboardService } from '../../../services/Dashboard';
 import Chart from '../../../components/Chart';
 import Fichadas from '../../../components/Fichadas';
-
-import Link from '@material-ui/core/Link';
+import { Link } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
 import { format, compareAsc } from 'date-fns'
 import Title from '../../../components/Title';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 export default () => {
-  
+
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  
+
   const [isLoaded, setLoaded] = React.useState(true);
   const [employeeNumber, setEmployee] = React.useState(0);
   const [messageError, setMessageError] = React.useState(false);
@@ -51,17 +52,26 @@ export default () => {
         <Grid item xs={12} md={4} lg={3}>
           <Paper className={fixedHeightPaper}>
             <Title>Empleados activos</Title>
-            <Typography component="p" variant="h4">
-              {employeeNumber}
-                    </Typography>
-            <Typography color="textSecondary" className={classes.depositContext}>
-              al {format(new Date(), "dd 'de' MMM, yyyy")}
-            </Typography>
-            <div>
-              <Link color="primary" href="#" onClick={null}>
-                Ver detalle
-                      </Link>
-            </div>
+            {isLoaded ?
+              <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '5vh' }}
+              ><CircularProgress size={24} /></Grid> :
+              <div>
+                <Typography component="p" variant="h4">
+                  {employeeNumber}
+                </Typography>
+                <Typography color="textSecondary" className={classes.depositContext}>
+                  al {format(new Date(), "dd 'de' MMM, yyyy")}
+                </Typography>
+                <div>
+                  <Link color="primary" to="/panel/empleados">Ver detalle</Link>
+                </div></div>
+            }
           </Paper>
         </Grid>
         {/* Recent Orders */}
