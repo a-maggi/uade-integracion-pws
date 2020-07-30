@@ -13,7 +13,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "clsx": "latest",
-    "material-table": "^1.66.0",
+    "material-table": "^1.67.1",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^5.2.0",

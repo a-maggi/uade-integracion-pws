@@ -186,14 +186,12 @@ export default () => {
           },
           toolbar: {
             searchPlaceholder: "Buscar..",
-            nRowsSelected: '{0} empleado(s) seleccionados'
           },
           header: {
             actions: 'Acciones'
           },
           body: {
-            emptyDataSourceMessage: 'Sin empleados a mostrar',
-            editRow: { deleteText: '¿Estás seguro de eliminar este empleado?' },
+            emptyDataSourceMessage: 'Sin registros a mostrar',
             filterRow: {
               filterTooltip: 'Filtrar'
             }

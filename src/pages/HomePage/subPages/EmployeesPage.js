@@ -25,6 +25,8 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
+import { format, parse } from 'date-fns'
+
 const tableIcons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -79,10 +81,17 @@ export default () => {
     columns: [
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
-      { title: 'Fecha ingreso', field: 'startDate', type: 'date' },
+      { dateSetting: { locale: "es-AR"} ,title: 'Fecha ingreso', field: 'startDate' },
+      { dateSetting: { locale: "es-AR"} ,title: 'Fecha salida', field: 'endDate' },
       { title: 'Documento', field: 'document', type: 'numeric' },
-      { title: 'Legajo', field: 'taxNumber', type: 'string' },
-      { title: 'Horas a cumplir', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Cuil', field: 'taxNumber', type: 'numeric' },
+      { title: 'Horas mensuales', field: 'hoursPerMonth', type: 'numeric' },
+      { title: 'Horario inicio', field: 'jobStart', type: 'string' , render: rowData => 
+        (format(parse(rowData.jobStart,"H:mm:ss.SSS", new Date()),"H:mm"))
+      },
+      { title: 'Horario fin', field: 'jobEnd', render: rowData => 
+        (format(new Date(parse(rowData.jobEnd,"H:mm:ss.SSS", new Date())),"H:mm")) 
+      },
     ],
     data: [],
   });
@@ -122,6 +131,7 @@ export default () => {
             labelDisplayedRows: '{from}-{to} de {count}'
           },
           toolbar: {
+            searchPlaceholder: "Buscar..",
             nRowsSelected: '{0} empleado(s) seleccionados'
           },
           header: {

@@ -123,14 +123,14 @@ export default () => {
             labelDisplayedRows: '{from}-{to} de {count}'
           },
           toolbar: {
-            nRowsSelected: '{0} empleado(s) seleccionados'
+            nRowsSelected: '{0} registros(s) seleccionados'
           },
           header: {
             actions: 'Accion'
           },
           body: {
-            emptyDataSourceMessage: 'Sin empleados a mostrar',
-            editRow: { deleteText: 'Estas seguro de eliminar este empleado?' },
+            emptyDataSourceMessage: 'Sin registros a mostrar',
+            editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
             filterRow: {
               filterTooltip: 'Filtrar'
             }
