@@ -31,6 +31,7 @@ import EmployeesPage from "./subPages/EmployeesPage"
 import HoursPage from "./subPages/HoursPage"
 import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
 import ApprovalsPage from "./subPages/ApprovalsPage"
+import BillsPage from "./subPages/BillsPage"
 
 function Copyright() {
   return (
@@ -169,7 +170,7 @@ export default () => {
         <Container maxWidth="lg" className={classes.container}>
           <Switch>
             <Route path={`${match.path}/facturas`}>
-              <p>facturas</p>
+              <BillsPage></BillsPage>
             </Route>
             <Route path={`${match.path}/reporte-empleados`}>
               <HoursByEmployeePage></HoursByEmployeePage>

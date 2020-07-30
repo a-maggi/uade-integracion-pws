@@ -8,7 +8,8 @@ export const DashboardService = {
   modifyEmployee,
   createEmployee,
   removeEmployee,
-  fetchCustomers
+  fetchCustomers,
+  fetchBills
 };
 
 function fetchEmployees() {
@@ -36,6 +37,21 @@ function fetchCustomers() {
       return res;
     });
 }
+
+
+function fetchBills() {
+  const requestOptions = {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/bills`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+
 function modifyEmployee(data) {
   const requestOptions = {
     method: 'PUT',

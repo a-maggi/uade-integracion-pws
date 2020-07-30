@@ -137,7 +137,7 @@ export default () => {
         <form className={classes.form} onSubmit={onSubmit}>
           {messageError && <FormHelperText>{messageError}</FormHelperText>}
           {success && <FormHelperText>{successMessage}</FormHelperText>}
-          <Autocomplete
+          {/* <Autocomplete
             id="combo-box-demo"
             options={customers}
             onChange={(event, newValue) => {
@@ -155,7 +155,7 @@ export default () => {
             inputValue={customerName}
             getOptionLabel={(option) => option.name}
             renderInput={(params) => <TextField {...params} label="Empresa" variant="outlined" />}
-          />
+          /> */}
           <TextField
             variant="outlined"
             margin="normal"

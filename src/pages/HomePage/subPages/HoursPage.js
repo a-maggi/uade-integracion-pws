@@ -71,6 +71,7 @@ const useStyles = makeStyles({
   },
 });
 
+//revision: false O revision true approbed true
 
 export default () => {
   const classes = useStyles();
@@ -79,11 +80,25 @@ export default () => {
   const [messageError, setMessageError] = React.useState(false);
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Entrada', field: 'signedDatetime',render: rowData => (format(new Date(rowData.entry.signedDatetime), 'MM/dd/yyyy hh:mm')), type: 'datetime' },
-      { title: 'Salida', field: 'signedDatetime',render: rowData => (format(new Date(rowData.egress.signedDatetime), 'MM/dd/yyyy hh:mm')), type: 'datetime' },
-      { title: 'Nombre', field: 'firstName',render: rowData => (rowData.employee.firstName) },
-      { title: 'Apellido', field: 'lastName',render: rowData => (rowData.employee.lastName) },
-      { title: 'Horas laburadas', field: 'hoursInCompany', type: 'numeric' }
+      {
+        title: 'Entrada', field: 'entrySignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.entry)
+            return (format(new Date(rowData.entry.signedDatetime), 'MM/dd/yyyy hh:mm'))
+          else
+            return (format(new Date(rowData.newProposalEntryDatetime), 'MM/dd/yyyy hh:mm'))
+        }
+      },
+      {
+        title: 'Salida', field: 'egressSignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.egress)
+            return (format(new Date(rowData.egress.signedDatetime), 'MM/dd/yyyy hh:mm'))
+          else
+            return (format(new Date(rowData.newProposalEgressDatetime), 'MM/dd/yyyy hh:mm'))
+        }
+      },
+      { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
+      { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
+      { title: 'Horas laburadas', field: 'hoursInCompany', render: rowData => (Math.round(rowData.hoursInCompany / 60  * 100)/100 + ' hs') }
     ],
     data: [],
   });
@@ -93,7 +108,7 @@ export default () => {
 
   const fetch = async () => {
     setLoaded(true);
-    await DashboardService.fetchHours()
+    await DashboardService.fetchHours('signed')
       .then(res => {
         console.log(123);
         setEmployee(res);
