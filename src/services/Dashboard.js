@@ -114,7 +114,13 @@ function fetchHours(filters) {
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
   if (filters) {
-    if (filters.employee && filters.dateFrom && filters.dateTo)
+    if (filters == 'signed'){
+      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&approved=true`, requestOptions)
+        .then(handleResponse)
+        .then(res => {
+          return res;
+        });
+      } else if (filters.employee && filters.dateFrom && filters.dateTo)
       return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}&employee=${filters.employee}`, requestOptions)
         .then(handleResponse)
         .then(res => {
