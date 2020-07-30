@@ -163,9 +163,9 @@ export default () => {
             fullWidth
             onChange={handleChange}
             id="legajo"
-            label="Legajo"
+            label="CUIL Empleado"
             name="taxNumber"
-            autoComplete="legajo"
+            autoComplete="CUIL Empleado"
             autoFocus
           />
           <div className={classes.wrapper}>
