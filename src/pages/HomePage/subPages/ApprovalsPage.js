@@ -9,6 +9,26 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import AddBox from '@material-ui/icons/AddBox';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import ThumbUp from '@material-ui/icons/ThumbUp';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import ThumbDown from '@material-ui/icons/ThumbDown';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+
+
 import { DashboardService } from '../../../services/Dashboard';
 import MaterialTable from 'material-table';
 import { format, compareAsc } from 'date-fns'
@@ -23,11 +43,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+const tableIcons = {
+  Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: React.forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: React.forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  ResetSearch: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: React.forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: React.forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+  ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
+
+
 export default () => {
   const classes = useStyles();
   const [isLoaded, setLoaded] = React.useState(true);
   const [rows, setRows] = React.useState([]);
   const [messageError, setMessageError] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState(false);
+
   const [state, setState] = React.useState({
     columns: [
       {
@@ -48,10 +84,32 @@ export default () => {
       },
       { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
       { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
-      { title: 'Horas laburadas', field: 'hoursInCompany', render: rowData => (Math.round(rowData.hoursInCompany / 60 * 100) / 100 + ' hs') }
+      { title: 'Concepto', field: 'type', render: rowData => (rowData.type) } /*signed => update Modificaicon fichada */
     ],
     data: [],
   });
+
+  const onReject = async (data) => {
+    await DashboardService.rejectHours({ id: data._id })
+      .then(res => {
+        setSuccessMessage(true)
+        fetch();
+      })
+      .catch(err => {
+        setErrorMessage(true);
+      });
+  }
+
+  const onApproved = async (data) => {
+    await DashboardService.approvedHours({ id: data._id })
+      .then(res => {
+        setSuccessMessage(true)
+        fetch();
+      })
+      .catch(err => {
+        setErrorMessage(true);
+      });
+  }
 
 
   React.useEffect(() => {
@@ -60,9 +118,14 @@ export default () => {
 
   const fetch = async () => {
     setLoaded(true);
-    await DashboardService.fetchHours()
+    await DashboardService.fetchHours("toApprove")
       .then(res => {
-        console.log(123);
+        setState(
+          {
+            ...state,
+            "data": res
+          }
+        )
 
       })
       .catch(err => {
@@ -72,72 +135,58 @@ export default () => {
   }
 
   return (
-    <Paper className={classes.paper}>
-      <Toolbar>
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Fichadas para Aprobar
-      </Typography>
-      </Toolbar>
+    
+    <React.Fragment>
 
-      <MaterialTable
-        // other props
-        isLoading={isLoaded}
-        localization={{
-          pagination: {
-            labelRowsSelect: "registros",
-            labelDisplayedRows: '{from}-{to} de {count}'
-          },
-          header: {
-            actions: 'Accion'
-          },
-          body: {
-            emptyDataSourceMessage: 'Sin registros a mostrar',
-            editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
-            filterRow: {
-              filterTooltip: 'Filtrar'
-            }
+    <MaterialTable
+      // other props
+      isLoading={isLoaded}
+      localization={{
+        pagination: {
+          labelRowsSelect: "registros",
+          labelDisplayedRows: '{from}-{to} de {count}'
+        },
+        header: {
+          actions: 'Accion'
+        },
+        body: {
+          emptyDataSourceMessage: 'Sin registros a mostrar',
+          editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
+          filterRow: {
+            filterTooltip: 'Filtrar'
           }
-        }}
-        title="Fichadas"
-        columns={state.columns}
-        data={state.data}
-        actions={[
-          {
-            icon: "12",
-            tooltip: 'Modificar fichada',
-            onClick: (event, rowData) =>  alert(1)
-          }
-        ]}
-      />
+        }
+      }}
+      icons={tableIcons}
+      title="Aprobaciones"
+      columns={state.columns}
+      data={state.data}
+      actions={[
+        {
+          icon: () => <ThumbDown></ThumbDown>,
+          tooltip: 'Rechazar',
+          onClick: (event, rowData) => onReject(rowData)
+        },
+        {
+          icon: () => <ThumbUp></ThumbUp>,
+          tooltip: 'Aprobar',
+          onClick: (event, rowData) => onApproved(rowData)
+        }
+      ]}
+    />
 
+    <Snackbar open={successMessage} autoHideDuration={6000}>
+      <Alert severity="success">
+        Operación realizada con exito
+      </Alert>
+    </Snackbar>
+    <Snackbar open={errorMessage} autoHideDuration={6000}>
+      <Alert severity="error">
+       Se produjo un error, intente nuevamente
+      </Alert>
+    </Snackbar>
+    
+    </React.Fragment>
 
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Fecha</TableCell>
-              <TableCell align="right">Nombre</TableCell>
-              <TableCell align="right">Apellido</TableCell>
-              <TableCell align="right">Fecha de ingreso</TableCell>
-              <TableCell align="right">Fecha de salida</TableCell>
-              <TableCell align="right">Fecha de salida</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-                <TableCell align="right">{row.carbs}</TableCell>
-                <TableCell align="right">{row.protein}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
   );
 }

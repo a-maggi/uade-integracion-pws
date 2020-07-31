@@ -12,7 +12,9 @@ export const DashboardService = {
   fetchCustomers,
   fetchBills,
   modifyHours,
-  createHours
+  createHours,
+  approvedHours,
+  rejectHours
 };
 
 function fetchEmployees() {
@@ -67,8 +69,8 @@ function modifyEmployee(data) {
       "endDate": data.endDate,
       "taxNumber": data.taxNumber,
       "hoursPerMonth": data.hoursPerMonth,
-      "jobStart": moment(data.jobStart, "H:mm:ss.SSS", true).isValid()? data.jobStart:data.jobStart+":00.000",
-      "jobEnd": moment(data.jobEnd, "H:mm:ss.SSS", true).isValid()? data.jobEnd:data.jobEnd+":00.000",
+      "jobStart": moment(data.jobStart, "H:mm:ss.SSS", true).isValid() ? data.jobStart : data.jobStart + ":00.000",
+      "jobEnd": moment(data.jobEnd, "H:mm:ss.SSS", true).isValid() ? data.jobEnd : data.jobEnd + ":00.000",
     })
   };
 
@@ -91,8 +93,8 @@ function createEmployee(data) {
       "endDate": data.endDate,
       "taxNumber": data.taxNumber,
       "hoursPerMonth": data.hoursPerMonth,
-      "jobStart": data.jobStart+":00.000",
-      "jobEnd": data.jobEnd+":00.000",
+      "jobStart": data.jobStart + ":00.000",
+      "jobEnd": data.jobEnd + ":00.000",
     })
   };
 
@@ -137,6 +139,35 @@ function modifyHours(data) {
 }
 
 
+function approvedHours(data) {
+  const requestOptions = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify({
+      "approved": true,
+    })
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/hours/${data.id}`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+function rejectHours(data) {
+  const requestOptions = {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/hours/${data.id}`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+
+
 function createHours(data) {
   const requestOptions = {
     method: 'POST',
@@ -144,7 +175,7 @@ function createHours(data) {
     body: JSON.stringify({
       "newProposalEgressDatetime": data.egressSignedDatetime,
       "newProposalEntryDatetime": data.entrySignedDatetime,
-      "approved": data.approved? true:false,
+      "approved": data.approved ? true : false,
       "type": data.type,
     })
   };
@@ -162,13 +193,20 @@ function fetchHours(filters) {
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
   if (filters) {
-    if (filters == 'signed'){
+    if (filters == 'signed') {
       return fetch(`${REACT_APP_apiUrl}/hours?type=signed&type=update&approved=true`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;
         });
-      } else if (filters.employee && filters.dateFrom && filters.dateTo)
+    }
+    else if (filters == 'toApprove') {
+      return fetch(`${REACT_APP_apiUrl}/hours?approved=false`, requestOptions)
+        .then(handleResponse)
+        .then(res => {
+          return res;
+        });
+    } else if (filters.employee && filters.dateFrom && filters.dateTo)
       return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}&employee=${filters.employee}`, requestOptions)
         .then(handleResponse)
         .then(res => {
@@ -193,7 +231,7 @@ function fetchHours(filters) {
           return res;
         });
   } else {
-    return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)
+    return fetch(`${REACT_APP_apiUrl}/hours?${filters}`, requestOptions)
       .then(handleResponse)
       .then(res => {
         return res;
