@@ -84,7 +84,7 @@ export default () => {
       { dateSetting: { locale: "es-AR"} ,title: 'Fecha ingreso', field: 'startDate' },
       { dateSetting: { locale: "es-AR"} ,title: 'Fecha salida', field: 'endDate' },
       { title: 'Documento', field: 'document', type: 'numeric' },
-      { title: 'Cuil', field: 'taxNumber', type: 'numeric' },
+      { title: 'Cuil', field: 'taxNumber', type: 'string' },
       { title: 'Horas mensuales', field: 'hoursPerMonth', type: 'numeric' },
       { title: 'Horario inicio', field: 'jobStart', type: 'string' , render: rowData => 
         (format(parse(rowData.jobStart,"H:mm:ss.SSS", new Date()),"H:mm"))
