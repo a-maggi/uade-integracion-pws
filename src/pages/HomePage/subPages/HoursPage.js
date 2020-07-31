@@ -177,8 +177,8 @@ export default () => {
 
   const onOpenModalChange = (data) => {
     updateFormData({
-      entrySignedDatetime: data.entry.signedDatetime,
-      egressSignedDatetime: data.egress.signedDatetime,
+      entrySignedDatetime: data.entry? data.entry.signedDatetime:data.newProposalEntryDatetime,
+      egressSignedDatetime: data.egress? data.egress.signedDatetime:data.newProposalEgressDatetime,
       justified: "",
       id: data._id
     });

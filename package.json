@@ -14,6 +14,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "clsx": "latest",
     "material-table": "^1.67.1",
+    "moment": "^2.27.0",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^5.2.0",

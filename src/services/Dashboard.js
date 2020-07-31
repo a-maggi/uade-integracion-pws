@@ -1,5 +1,6 @@
 import { handleResponse } from '../_helpers';
 import { authenticationService } from './Auth';
+import moment from 'moment';
 const { REACT_APP_apiUrl } = process.env;
 
 export const DashboardService = {
@@ -63,8 +64,11 @@ function modifyEmployee(data) {
       "lastName": data.lastName,
       "document": data.document,
       "startDate": data.startDate,
+      "endDate": data.endDate,
       "taxNumber": data.taxNumber,
       "hoursPerMonth": data.hoursPerMonth,
+      "jobStart": moment(data.jobStart, "H:mm:ss.SSS", true).isValid()? data.jobStart:data.jobStart+":00.000",
+      "jobEnd": moment(data.jobEnd, "H:mm:ss.SSS", true).isValid()? data.jobEnd:data.jobEnd+":00.000",
     })
   };
 
@@ -84,6 +88,7 @@ function createEmployee(data) {
       "lastName": data.lastName,
       "document": data.document,
       "startDate": data.startDate,
+      "endDate": data.endDate,
       "taxNumber": data.taxNumber,
       "hoursPerMonth": data.hoursPerMonth,
       "jobStart": data.jobStart+":00.000",

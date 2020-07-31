@@ -10,7 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { DashboardService } from '../../../services/Dashboard';
-
+import MaterialTable from 'material-table';
+import { format, compareAsc } from 'date-fns'
 const useStyles = makeStyles((theme) => ({
   title: {
     flex: '1 1 100%',
@@ -27,6 +28,31 @@ export default () => {
   const [isLoaded, setLoaded] = React.useState(true);
   const [rows, setRows] = React.useState([]);
   const [messageError, setMessageError] = React.useState(false);
+  const [state, setState] = React.useState({
+    columns: [
+      {
+        title: 'Entrada', field: 'entrySignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.entry)
+            return (format(new Date(rowData.entry.signedDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+          else
+            return (format(new Date(rowData.newProposalEntryDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+        }
+      },
+      {
+        title: 'Salida', field: 'egressSignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.egress)
+            return (format(new Date(rowData.egress.signedDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+          else
+            return (format(new Date(rowData.newProposalEgressDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+        }
+      },
+      { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
+      { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
+      { title: 'Horas laburadas', field: 'hoursInCompany', render: rowData => (Math.round(rowData.hoursInCompany / 60 * 100) / 100 + ' hs') }
+    ],
+    data: [],
+  });
+
 
   React.useEffect(() => {
     fetch();
@@ -48,10 +74,43 @@ export default () => {
   return (
     <Paper className={classes.paper}>
       <Toolbar>
-      <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-        Fichadas para Aprobar
+        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+          Fichadas para Aprobar
       </Typography>
       </Toolbar>
+
+      <MaterialTable
+        // other props
+        isLoading={isLoaded}
+        localization={{
+          pagination: {
+            labelRowsSelect: "registros",
+            labelDisplayedRows: '{from}-{to} de {count}'
+          },
+          header: {
+            actions: 'Accion'
+          },
+          body: {
+            emptyDataSourceMessage: 'Sin registros a mostrar',
+            editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
+            filterRow: {
+              filterTooltip: 'Filtrar'
+            }
+          }
+        }}
+        title="Fichadas"
+        columns={state.columns}
+        data={state.data}
+        actions={[
+          {
+            icon: "12",
+            tooltip: 'Modificar fichada',
+            onClick: (event, rowData) =>  alert(1)
+          }
+        ]}
+      />
+
+
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>

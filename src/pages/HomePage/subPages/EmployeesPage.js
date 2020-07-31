@@ -24,7 +24,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-
+import moment from 'moment';
+import TextField from '@material-ui/core/TextField';
 import { format, parse } from 'date-fns'
 
 const tableIcons = {
@@ -81,16 +82,18 @@ export default () => {
     columns: [
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
-      { dateSetting: { locale: "es-AR"} ,title: 'Fecha ingreso', field: 'startDate' },
-      { dateSetting: { locale: "es-AR"} ,title: 'Fecha salida', field: 'endDate' },
-      { title: 'Documento', field: 'document', type: 'numeric' },
+      { dateSetting: { locale: "es-AR"} ,title: 'Fecha ingreso',validate: rowData => moment(rowData.startDate, "YYYY-MM-DD", true).isValid(),  field: 'startDate' },
+      { dateSetting: { locale: "es-AR"} ,title: 'Fecha salida',validate: rowData => rowData.endDate? moment(rowData.endDate, "YYYY-MM-DD", true).isValid() : true,  field: 'endDate' },
+      { title: 'Documento', field: 'document', type: 'string' },
       { title: 'Cuil', field: 'taxNumber', type: 'string' },
       { title: 'Horas mensuales', field: 'hoursPerMonth', type: 'numeric' },
-      { title: 'Horario inicio', field: 'jobStart', type: 'string' , render: rowData => 
-        (format(parse(rowData.jobStart,"H:mm:ss.SSS", new Date()),"H:mm"))
+      { title: 'Horario inicio', field: 'jobStart', type: 'string', validate: rowData => moment(rowData.jobStart, "HH:mm", true).isValid()||moment(rowData.jobStart, "HH:mm:ss.SSS", true).isValid(),  render: rowData => 
+        ( moment(rowData.jobStart, "HH:mm:ss.SSS", true).isValid() ? format(parse(rowData.jobStart,"HH:mm:ss.SSS", new Date()),"HH:mm") : rowData.jobStart ),
+        editComponent: props => (<TextField inputProps={{ pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", style: { fontSize: '13px' } }} value={moment(props.value, "HH:mm:ss.SSS", true).isValid()? format(parse(props.value,"HH:mm:ss.SSS", new Date()),"HH:mm"): props.value} size="small" onChange={(e) => props.onChange(e.target.value)} />)
       },
-      { title: 'Horario fin', field: 'jobEnd', render: rowData => 
-        (format(new Date(parse(rowData.jobEnd,"H:mm:ss.SSS", new Date())),"H:mm")) 
+      { title: 'Horario fin', field: 'jobEnd', validate: rowData => moment(rowData.jobEnd, "HH:mm", true).isValid()||moment(rowData.jobEnd, "HH:mm:ss.SSS", true).isValid(),  render: rowData => 
+      ( moment(rowData.jobEnd, "HH:mm:ss.SSS", true).isValid() ? format(parse(rowData.jobEnd,"HH:mm:ss.SSS", new Date()),"HH:mm") : rowData.jobEnd ),
+      editComponent: props => (<TextField inputProps={{ pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", style: { fontSize: '13px' } }} value={moment(props.value, "HH:mm:ss.SSS", true).isValid()? format(parse(props.value,"HH:mm:ss.SSS", new Date()),"HH:mm"): props.value} size="small" onChange={(e) => props.onChange(e.target.value)} />)
       },
     ],
     data: [],
@@ -157,7 +160,7 @@ export default () => {
                   resolve();
                   setState((prevState) => {
                     const data = [...prevState.data];
-                    data.push(newData);
+                    data.push(res);
                     return { ...prevState, data };
                   });
                 })
@@ -175,7 +178,7 @@ export default () => {
                   if (oldData) {
                     setState((prevState) => {
                       const data = [...prevState.data];
-                      data[data.indexOf(oldData)] = newData;
+                      data[data.indexOf(oldData)] = res;
                       return { ...prevState, data };
                     });
                   }
