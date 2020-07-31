@@ -9,7 +9,9 @@ export const DashboardService = {
   createEmployee,
   removeEmployee,
   fetchCustomers,
-  fetchBills
+  fetchBills,
+  modifyHours,
+  createHours
 };
 
 function fetchEmployees() {
@@ -108,6 +110,45 @@ function removeEmployee(data) {
 }
 
 
+function modifyHours(data) {
+  const requestOptions = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify({
+      "newProposalEgressDatetime": data.egressSignedDatetime,
+      "newProposalEntryDatetime": data.entrySignedDatetime,
+      "justified": data.justified,
+      "approved": data.approved,
+    })
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/hours/${data.id}`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+
+
+function createHours(data) {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify({
+      "newProposalEgressDatetime": data.egressSignedDatetime,
+      "newProposalEntryDatetime": data.entrySignedDatetime,
+      "approved": data.approved? true:false,
+      "type": data.type,
+    })
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+
 function fetchHours(filters) {
   const requestOptions = {
     method: 'GET',
@@ -115,7 +156,7 @@ function fetchHours(filters) {
   };
   if (filters) {
     if (filters == 'signed'){
-      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&approved=true`, requestOptions)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&type=update&approved=true`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;
