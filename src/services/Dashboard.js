@@ -86,8 +86,8 @@ function createEmployee(data) {
       "startDate": data.startDate,
       "taxNumber": data.taxNumber,
       "hoursPerMonth": data.hoursPerMonth,
-      "jobStart": data.jobStart,
-      "jobEnd": data.jobEnd,
+      "jobStart": data.jobStart+":00.000",
+      "jobEnd": data.jobEnd+":00.000",
     })
   };
 
