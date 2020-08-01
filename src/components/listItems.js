@@ -15,7 +15,7 @@ import Collapse from '@material-ui/core/Collapse';
 import { makeStyles } from '@material-ui/core/styles';
 import HistoryIcon from '@material-ui/icons/History';
 import List from '@material-ui/core/List';
-
+import Send from '@material-ui/icons/Send';
 import { authenticationService } from '../services/Auth';
 
 const useStyles = makeStyles((theme) => ({
@@ -107,6 +107,14 @@ export default () => {
             <HistoryIcon />
           </ListItemIcon>
           <ListItemText primary="Licencias" />
+        </ListItem>
+      }
+      {(user.user.role.name == "Administrator") &&
+        <ListItem button component={Link} to="/panel/novedades" selected={location.pathname == '/panel/novedades' ? true : false}>
+          <ListItemIcon>
+            <Send />
+          </ListItemIcon>
+          <ListItemText primary="Novedades" />
         </ListItem>
       }
     </div>

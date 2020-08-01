@@ -26,7 +26,7 @@ import { useHistory } from "react-router-dom";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
 import HomePage from "./subPages/HomePage"
-//import HomeBasicPage from "./subPages/HomeBasicPage"
+import NewsPage from "./subPages/NewsPage"
 import EmployeesPage from "./subPages/EmployeesPage"
 import HoursPage from "./subPages/HoursPage"
 import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
@@ -187,6 +187,9 @@ export default () => {
             </Route>
             <Route path={`${match.path}/licencias`}>
               <LicencesPage></LicencesPage>
+            </Route>
+            <Route path={`${match.path}/novedades`}>
+              <NewsPage></NewsPage>
             </Route>
             <Route path={match.path}>
               <HomePage></HomePage>
