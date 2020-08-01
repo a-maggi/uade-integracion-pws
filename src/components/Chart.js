@@ -79,7 +79,7 @@ export default function Chart() {
           <CircularProgress size={24} />
         </Grid> :
 
-        dataGraph ?
+        dataGraph && dataGraph.length > 0 ?
 
           <ResponsiveContainer width="100%" height={150} minWidth="0">
             <LineChart

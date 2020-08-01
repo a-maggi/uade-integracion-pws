@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
+import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import AddBox from '@material-ui/icons/AddBox';
@@ -24,7 +25,7 @@ import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
+import Info from '@material-ui/icons/Info';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
@@ -56,6 +57,7 @@ const tableIcons = {
 };
 
 
+
 export default () => {
   const classes = useStyles();
   const [isLoaded, setLoaded] = React.useState(true);
@@ -63,28 +65,73 @@ export default () => {
   const [messageError, setMessageError] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState(false);
+  const [openPopup, setOpenPopup] = React.useState({
+    openedPopoverId: null,
+    anchorEl: null,
+  });
+
+  const handlePopoverOpen = (event, popoverId) => {
+    setOpenPopup({
+      openedPopoverId: popoverId,
+      anchorEl: event.target,
+    });
+  }
+
+  const handlePopoverClose = () => {
+    setOpenPopup({
+      openedPopoverId: null,
+      anchorEl: null,
+    });
+  }
+
+  const JustifiedElement = ({ justified }) => (
+    <React.Fragment>
+      Fichada
+      <Tooltip title={justified ? justified : "Sin justificación"} aria-label="Justificacion">
+        <Info style={{ fontSize: 15 }} />
+      </Tooltip>
+    </React.Fragment>
+  )
 
   const [state, setState] = React.useState({
     columns: [
       {
-        title: 'Entrada', field: 'entrySignedDatetime', type: 'datetime', render: rowData => {
-          if (rowData.entry)
-            return (format(new Date(rowData.entry.signedDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+        title: 'Inicio', field: 'entrySignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.type == "holiday" || rowData.type == "study")
+            return (format(new Date(rowData.newProposalEntryDatetime.replace('Z', '')), 'dd/MM/yyyy'))
+          else if (rowData.newProposalEntryDatetime)
+            return (format(new Date(rowData.newProposalEntryDatetime.replace('Z', '')), 'dd/MM/yyyy H:mm'))
           else
-            return (format(new Date(rowData.newProposalEntryDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+            return (format(new Date(rowData.entry.signedDatetime.replace('Z', '')), 'dd/MM/yyyy H:mm'))
         }
       },
       {
-        title: 'Salida', field: 'egressSignedDatetime', type: 'datetime', render: rowData => {
-          if (rowData.egress)
-            return (format(new Date(rowData.egress.signedDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+        title: 'Fin', field: 'egressSignedDatetime', type: 'datetime', render: rowData => {
+          if (rowData.type == "holiday" || rowData.type == "study")
+            return (format(new Date(rowData.newProposalEgressDatetime.replace('Z', '')), 'dd/MM/yyyy'))
+          else if (rowData.newProposalEgressDatetime)
+            return (format(new Date(rowData.newProposalEgressDatetime.replace('Z', '')), 'dd/MM/yyyy H:mm'))
           else
-            return (format(new Date(rowData.newProposalEgressDatetime.replace('Z', '')), 'MM/dd/yyyy H:mm'))
+            return (format(new Date(rowData.egress.signedDatetime.replace('Z', '')), 'dd/MM/yyyy H:mm'))
         }
       },
       { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
       { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
-      { title: 'Concepto', field: 'type', render: rowData => (rowData.type) } /*signed => update Modificaicon fichada */
+      {
+        title: 'Concepto', field: 'type', render: rowData => {
+          switch (rowData.type) {
+            case "holiday":
+              return "Vacaciones";
+            case "study":
+              return "Dia de estudio";
+            case "signed":
+            case "update":
+              return (<JustifiedElement justified={rowData.justified} />)
+            default:
+              return "Sin especificar"
+          }
+        }
+      }
     ],
     data: [],
   });
@@ -135,57 +182,60 @@ export default () => {
   }
 
   return (
-    
+
     <React.Fragment>
 
-    <MaterialTable
-      // other props
-      isLoading={isLoaded}
-      localization={{
-        pagination: {
-          labelRowsSelect: "registros",
-          labelDisplayedRows: '{from}-{to} de {count}'
-        },
-        header: {
-          actions: 'Accion'
-        },
-        body: {
-          emptyDataSourceMessage: 'Sin registros a mostrar',
-          editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
-          filterRow: {
-            filterTooltip: 'Filtrar'
+      <MaterialTable
+        // other props
+        isLoading={isLoaded}
+        localization={{
+          pagination: {
+            labelRowsSelect: "registros",
+            labelDisplayedRows: '{from}-{to} de {count}'
+          },
+          toolbar: {
+            searchPlaceholder: "Buscar..",
+          },
+          header: {
+            actions: 'Accion'
+          },
+          body: {
+            emptyDataSourceMessage: 'Sin registros a mostrar',
+            editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
+            filterRow: {
+              filterTooltip: 'Filtrar'
+            }
           }
-        }
-      }}
-      icons={tableIcons}
-      title="Aprobaciones"
-      columns={state.columns}
-      data={state.data}
-      actions={[
-        {
-          icon: () => <ThumbDown></ThumbDown>,
-          tooltip: 'Rechazar',
-          onClick: (event, rowData) => onReject(rowData)
-        },
-        {
-          icon: () => <ThumbUp></ThumbUp>,
-          tooltip: 'Aprobar',
-          onClick: (event, rowData) => onApproved(rowData)
-        }
-      ]}
-    />
+        }}
+        icons={tableIcons}
+        title="Aprobaciones"
+        columns={state.columns}
+        data={state.data}
+        actions={[
+          {
+            icon: () => <ThumbDown></ThumbDown>,
+            tooltip: 'Rechazar',
+            onClick: (event, rowData) => onReject(rowData)
+          },
+          {
+            icon: () => <ThumbUp></ThumbUp>,
+            tooltip: 'Aprobar',
+            onClick: (event, rowData) => onApproved(rowData)
+          }
+        ]}
+      />
 
-    <Snackbar open={successMessage} autoHideDuration={6000}>
-      <Alert severity="success">
-        Operación realizada con exito
+      <Snackbar open={successMessage} autoHideDuration={6000}>
+        <Alert severity="success">
+          Operación realizada con exito
       </Alert>
-    </Snackbar>
-    <Snackbar open={errorMessage} autoHideDuration={6000}>
-      <Alert severity="error">
-       Se produjo un error, intente nuevamente
+      </Snackbar>
+      <Snackbar open={errorMessage} autoHideDuration={6000}>
+        <Alert severity="error">
+          Se produjo un error, intente nuevamente
       </Alert>
-    </Snackbar>
-    
+      </Snackbar>
+
     </React.Fragment>
 
   );

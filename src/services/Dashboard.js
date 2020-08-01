@@ -11,6 +11,7 @@ export const DashboardService = {
   removeEmployee,
   fetchCustomers,
   fetchBills,
+  setApproveBill,
   modifyHours,
   createHours,
   approvedHours,
@@ -51,6 +52,24 @@ function fetchBills() {
   };
 
   return fetch(`${REACT_APP_apiUrl}/bills`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
+
+
+
+function setApproveBill(id) {
+  const requestOptions = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify({
+      "charged": true,
+    })
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/bills/${id}`, requestOptions)
     .then(handleResponse)
     .then(res => {
       return res;
@@ -200,6 +219,13 @@ function fetchHours(filters) {
           return res;
         });
     }
+    else if (filters == 'licence') {
+      return fetch(`${REACT_APP_apiUrl}/hours?type=holiday&type=study`, requestOptions)
+        .then(handleResponse)
+        .then(res => {
+          return res;
+        });
+    }
     else if (filters == 'toApprove') {
       return fetch(`${REACT_APP_apiUrl}/hours?approved=false`, requestOptions)
         .then(handleResponse)
@@ -207,19 +233,19 @@ function fetchHours(filters) {
           return res;
         });
     } else if (filters.employee && filters.dateFrom && filters.dateTo)
-      return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}&employee=${filters.employee}`, requestOptions)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&type=update&approved=true&createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}&employee=${filters.employee}`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;
         });
     else if (filters.dateFrom && filters.dateTo)
-      return fetch(`${REACT_APP_apiUrl}/hours?createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}`, requestOptions)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&type=update&approved=true&createdAt_gte=${filters.dateFrom}&createdAt_lte=${filters.dateTo}`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;
         });
     else if (filters.employee)
-      return fetch(`${REACT_APP_apiUrl}/hours?employee=${filters.employee}`, requestOptions)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=signed&type=update&approved=true&employee=${filters.employee}`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;
@@ -230,11 +256,5 @@ function fetchHours(filters) {
         .then(res => {
           return res;
         });
-  } else {
-    return fetch(`${REACT_APP_apiUrl}/hours?${filters}`, requestOptions)
-      .then(handleResponse)
-      .then(res => {
-        return res;
-      });
   }
 }

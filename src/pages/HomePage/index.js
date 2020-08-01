@@ -32,6 +32,7 @@ import HoursPage from "./subPages/HoursPage"
 import HoursByEmployeePage from "./subPages/HoursByEmployeePage"
 import ApprovalsPage from "./subPages/ApprovalsPage"
 import BillsPage from "./subPages/BillsPage"
+import LicencesPage from "./subPages/LicencesPage"
 
 function Copyright() {
   return (
@@ -183,6 +184,9 @@ export default () => {
             </Route>
             <Route path={`${match.path}/aprobaciones`}>
               <ApprovalsPage></ApprovalsPage>
+            </Route>
+            <Route path={`${match.path}/licencias`}>
+              <LicencesPage></LicencesPage>
             </Route>
             <Route path={match.path}>
               <HomePage></HomePage>
