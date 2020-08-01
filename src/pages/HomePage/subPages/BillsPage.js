@@ -100,7 +100,7 @@ export default () => {
 
   const fetchService = async () => {
     setLoaded(true);
-    await DashboardService.fetchBills()
+    await DashboardService.fetchBills(user.user.customer._id)
       .then(res => {
         setRows(res)
       })

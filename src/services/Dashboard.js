@@ -76,13 +76,13 @@ function fetchCustomers() {
 }
 
 
-function fetchBills() {
+function fetchBills(customer) {
   const requestOptions = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
   };
 
-  return fetch(`${REACT_APP_apiUrl}/bills`, requestOptions)
+  return fetch(`${REACT_APP_apiUrl}/bills?customer=${customer}`, requestOptions)
     .then(handleResponse)
     .then(res => {
       return res;
