@@ -25,6 +25,7 @@ import { authenticationService } from '../../services/Auth';
 import { useHistory } from "react-router-dom";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 
+import Hidden from '@material-ui/core/Hidden';
 import HomePage from "./subPages/HomePage"
 import NewsPage from "./subPages/NewsPage"
 import EmployeesPage from "./subPages/EmployeesPage"
@@ -49,7 +50,8 @@ function Copyright() {
 
 const drawerWidth = 240;
 
-export default () => {
+export default (props) => {
+  const { window } = props;
   let match = useRouteMatch();
   let history = useHistory();
   const classes = useStyles();
@@ -57,16 +59,10 @@ export default () => {
   const [user, setUser] = React.useState(authenticationService.user);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const openUser = Boolean(anchorEl);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -83,6 +79,9 @@ export default () => {
     authenticationService.logout();
   };
 
+  const handleDrawerToggle = () => {
+    setOpen(!open);
+  }
 
   React.useEffect(() => {
     // setUser(authenticationService.user);
@@ -101,17 +100,18 @@ export default () => {
 
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
+  const container = window !== undefined ? () => window().document.body : undefined;
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+      <AppBar position="absolute" className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+            onClick={handleDrawerToggle}
+            className={classes.menuButton}
           >
             <MenuIcon />
           </IconButton>
@@ -151,21 +151,37 @@ export default () => {
           )}
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List><MainListItems></MainListItems></List>
-      </Drawer>
+      <nav className={classes.drawer}>
+        <Hidden smUp implementation="css">
+          <Drawer
+            container={container}
+            variant="temporary"
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            open={open}
+          >
+            <div className={classes.toolbar} />
+            <Divider />
+            <List><MainListItems></MainListItems></List>
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            variant="permanent"
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            open
+          >
+             <div className={classes.toolbar} />
+              <Divider />
+            <List><MainListItems></MainListItems></List>
+          </Drawer>
+        </Hidden>
+      </nav>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
@@ -227,7 +243,12 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
   },
+  toolbar: theme.mixins.toolbar,
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
@@ -238,12 +259,21 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: 36,
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   menuButtonHidden: {
     display: 'none',
   },
   title: {
     flexGrow: 1,
+  },
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
   },
   drawerPaper: {
     position: 'relative',
