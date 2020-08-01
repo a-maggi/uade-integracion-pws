@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import Title from './Title';
-import { format, subWeeks } from 'date-fns'
+import { format, subWeeks, subDays } from 'date-fns'
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { DashboardService } from '../services/Dashboard';
@@ -50,7 +50,7 @@ export default function Chart() {
     await DashboardService.fetchHours({
       employee: '',
       dateFrom: format(subWeeks(new Date(), 1), "yyyy-MM-dd"),
-      dateTo: format(new Date(), "yyyy-MM-dd")
+      dateTo: format(subDays(new Date(),-2), "yyyy-MM-dd")
     })
       .then(res => {
         console.log(res)
