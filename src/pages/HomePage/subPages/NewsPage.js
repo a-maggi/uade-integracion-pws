@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  wrapper: {
+    position: 'relative',
+  },
   buttonProgress: {
     color: green[500],
     position: 'absolute',
@@ -107,6 +110,7 @@ export default () => {
   };
 
   const onSubmit = async (e) => {
+    e.preventDefault();
     setLoaded(true);
     await DashboardService.sendNews(formData)
       .then(res => {
@@ -116,7 +120,6 @@ export default () => {
         setError(true);
       });
       setLoaded(false);
-      e.preventDefault();
   }
 
   const handleCloseAlert = (event, reason) => {
