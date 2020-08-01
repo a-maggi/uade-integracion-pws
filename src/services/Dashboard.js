@@ -195,7 +195,9 @@ function approvedHours(data) {
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
     body: JSON.stringify({
       "approved": true,
-      "revision": true,
+      "revision": true, 
+      "newProposalEgressDatetime": data.newProposalEgressDatetime,
+      "newProposalEntryDatetime": data.newProposalEntryDatetime,
     })
   };
 

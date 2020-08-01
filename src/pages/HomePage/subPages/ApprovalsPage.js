@@ -146,9 +146,9 @@ export default () => {
         setErrorMessage(true);
       });
   }
-
+  
   const onApproved = async (data) => {
-    await DashboardService.approvedHours({ id: data._id })
+    await DashboardService.approvedHours({ newProposalEgressDatetime: data.newProposalEgressDatetime, newProposalEntryDatetime: data.newProposalEntryDatetime,id: data._id })
       .then(res => {
         setSuccessMessage(true)
         fetch();
