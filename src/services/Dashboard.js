@@ -284,7 +284,7 @@ function fetchHours(filters) {
           return res;
         });
     else if (filters.type)
-      return fetch(`${REACT_APP_apiUrl}/hours?type=${filters.type}`, requestOptions)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=${filters.type}&type=update&approved=true`, requestOptions)
         .then(handleResponse)
         .then(res => {
           return res;

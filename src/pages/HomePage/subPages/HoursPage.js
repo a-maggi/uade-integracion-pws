@@ -146,7 +146,7 @@ export default () => {
       },
       { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
       { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
-      { title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => (Math.round(rowData.hoursInCompany / 60 * 100) / 100 + ' hs') }
+      { title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => (Math.floor(rowData.hoursInCompany / 60)+':'+rowData.hoursInCompany % 60 + ' hs') }
     ],
     data: [],
   });

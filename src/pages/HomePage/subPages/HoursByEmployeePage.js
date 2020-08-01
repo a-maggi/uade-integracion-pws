@@ -110,7 +110,7 @@ export default () => {
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
       { title: 'Horas a cumplir',  align: 'right', field: 'hoursPerMonth', type: 'numeric' },
-      { title: 'Horas trabajadas', align: 'right', field: 'hoursInCompany', render: rowData => (Math.round(rowData.hoursInCompany / 60  * 100)/100 + ' hs') }
+      { title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => (Math.floor(rowData.hoursInCompany / 60)+':'+rowData.hoursInCompany % 60 + ' hs') }
     ],
     data: [],
   });
