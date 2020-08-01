@@ -289,6 +289,9 @@ export default () => {
           header: {
             actions: 'Accion'
           },
+          toolbar: {
+            searchPlaceholder: "Buscar..",
+          },
           body: {
             emptyDataSourceMessage: 'Sin registros a mostrar',
             editRow: { deleteText: 'Estas seguro de eliminar este registro?' },
