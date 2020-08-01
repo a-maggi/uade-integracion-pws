@@ -9,17 +9,19 @@ import Chart from '../../../components/Chart';
 import Fichadas from '../../../components/Fichadas';
 import { Link } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
-import { format, compareAsc } from 'date-fns'
+import { format, subDays } from 'date-fns'
 import Title from '../../../components/Title';
 
+import { authenticationService } from '../../../services/Auth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 export default () => {
 
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-
+  const [user, setUser] = React.useState(authenticationService.user);
   const [isLoaded, setLoaded] = React.useState(true);
   const [employeeNumber, setEmployee] = React.useState(0);
+  const [hoursNumber, setHours] = React.useState(0);
   const [messageError, setMessageError] = React.useState(false);
 
   React.useEffect(() => {
@@ -28,52 +30,75 @@ export default () => {
 
   const fetch = async () => {
     setLoaded(true);
-    await DashboardService.fetchEmployees()
-      .then(res => {
-        setEmployee(res.length);
+    if (user.user.role.name == "Administrator") {
+      await DashboardService.fetchEmployees()
+        .then(res => {
+          setEmployee(res.length);
+        })
+        .catch(err => {
+          setMessageError(err)
+        });
+    }
+    else {
+      await DashboardService.fetchHours({
+        employee: user.user._id,
+        dateFrom: format(subDays(new Date(), 1), "yyyy-MM-dd"),
+        dateTo: format(new Date(), "yyyy-MM-dd")
       })
-      .catch(err => {
-        setMessageError(err)
-      });
+        .then(res => {
+          console.log(res)
+
+        })
+        .catch(err => {
+          setMessageError(err)
+        });
+    }
+
     setLoaded(false);
   }
 
   return (
 
     <React.Fragment>
+
       <Grid container spacing={3}>
         {/* Chart */}
-        <Grid item xs={12} md={8} lg={9}>
-          <Paper className={fixedHeightPaper}>
-            <Chart />
-          </Paper>
-        </Grid>
+        {(user.user.role.name == "Administrator") &&
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper className={fixedHeightPaper}>
+              <Chart />
+            </Paper>
+          </Grid>
+        }
         {/* Actual Employees */}
-        <Grid item xs={12} md={4} lg={3}>
-          <Paper className={fixedHeightPaper}>
-            <Title>Empleados activos</Title>
-            {isLoaded ?
-              <Grid
-                container
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justify="center"
-                style={{ minHeight: '5vh' }}
-              ><CircularProgress size={24} /></Grid> :
-              <div>
-                <Typography component="p" variant="h4">
-                  {employeeNumber}
-                </Typography>
-                <Typography color="textSecondary" className={classes.depositContext}>
-                  al {format(new Date(), "dd 'de' MMM, yyyy")}
-                </Typography>
+        {(user.user.role.name == "Administrator") &&
+          <Grid item xs={12} md={4} lg={3}>
+            <Paper className={fixedHeightPaper}>
+              <Title>Empleados activos</Title>
+              {isLoaded ?
+                <Grid
+                  container
+                  spacing={0}
+                  direction="column"
+                  alignItems="center"
+                  justify="center"
+                  style={{ minHeight: '5vh' }}
+                ><CircularProgress size={24} /></Grid> :
                 <div>
-                  <Link color="primary" to="/panel/empleados">Ver detalle</Link>
-                </div></div>
-            }
-          </Paper>
-        </Grid>
+                  <Typography component="p" variant="h4">
+                    {employeeNumber}
+                  </Typography>
+                  <Typography color="textSecondary" className={classes.depositContext}>
+                    al {format(new Date(), "dd 'de' MMM, yyyy")}
+                  </Typography>
+                  <div>
+                    <Link color="primary" to="/panel/empleados">Ver detalle</Link>
+                  </div></div>
+              }
+            </Paper>
+          </Grid>
+        }
+
         {/* Recent Orders */}
         <Grid item xs={12}>
           <Paper className={classes.paper}>
@@ -81,7 +106,7 @@ export default () => {
           </Paper>
         </Grid>
       </Grid>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
 

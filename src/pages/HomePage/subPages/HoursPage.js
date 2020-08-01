@@ -36,6 +36,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 
+import { authenticationService } from '../../../services/Auth';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import { Add } from '@material-ui/icons';
@@ -123,6 +124,8 @@ export default () => {
     justified: "",
     id: ""
   });
+  
+  const [user, setUser] = React.useState(authenticationService.user);
   const [state, setState] = React.useState({
     columns: [
       {
@@ -298,7 +301,7 @@ export default () => {
         title="Fichadas"
         columns={state.columns}
         data={state.data}
-        actions={[
+        actions={(user.user.role.name == "Authenticated") && [
           {
             icon: () => <Edit></Edit>,
             tooltip: 'Modificar fichada',

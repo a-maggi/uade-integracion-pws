@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import HistoryIcon from '@material-ui/icons/History';
 import List from '@material-ui/core/List';
 
+import { authenticationService } from '../services/Auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,6 +35,8 @@ export default () => {
   const location = useLocation();
   const [open, setOpen] = React.useState(false);
 
+  const [user, setUser] = React.useState(authenticationService.user);
+
   const handleClick = () => {
     setOpen(!open);
   };
@@ -48,18 +51,22 @@ export default () => {
         <ListItemText primary="Inicio" />
 
       </ListItem>
-      <ListItem button component={Link} to="/panel/facturas" selected={location.pathname == '/panel/facturas' ? true : false}>
-        <ListItemIcon>
-          <ReceiptIcon />
-        </ListItemIcon>
-        <ListItemText primary="Facturas" />
-      </ListItem>
-      <ListItem button component={Link} to="/panel/empleados" selected={location.pathname == '/panel/empleados' ? true : false}>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Empleados" />
-      </ListItem>
+      {(user.user.role.name == "Administrator") &&
+        <ListItem button component={Link} to="/panel/facturas" selected={location.pathname == '/panel/facturas' ? true : false}>
+          <ListItemIcon>
+            <ReceiptIcon />
+          </ListItemIcon>
+          <ListItemText primary="Facturas" />
+        </ListItem>
+      }
+      {(user.user.role.name == "Administrator") &&
+        <ListItem button component={Link} to="/panel/empleados" selected={location.pathname == '/panel/empleados' ? true : false}>
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Empleados" />
+        </ListItem>
+      }
       <ListItem button onClick={handleClick}>
         <ListItemIcon>
           <BarChartIcon />
@@ -69,32 +76,39 @@ export default () => {
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem button className={classes.nested} component={Link} to="/panel/reporte-empleados" selected={ location.pathname == '/panel/reporte-empleados'? true : false}>
-            <ListItemIcon>
-              <InsertDriveFile />
-            </ListItemIcon>
-            <ListItemText primary="Horas trabajadas" />
-          </ListItem>
-          <ListItem button className={classes.nested} component={Link} to="/panel/reporte-horas" selected={ location.pathname == '/panel/reporte-horas'? true : false}>
+          {(user.user.role.name == "Administrator") &&
+            <ListItem button className={classes.nested} component={Link} to="/panel/reporte-empleados" selected={location.pathname == '/panel/reporte-empleados' ? true : false}>
+              <ListItemIcon>
+                <InsertDriveFile />
+              </ListItemIcon>
+              <ListItemText primary="Horas trabajadas" />
+            </ListItem>
+          }
+          <ListItem button className={classes.nested} component={Link} to="/panel/reporte-horas" selected={location.pathname == '/panel/reporte-horas' ? true : false}>
             <ListItemIcon>
               <InsertDriveFile />
             </ListItemIcon>
             <ListItemText primary="Fichadas" />
           </ListItem>
+
         </List>
       </Collapse>
-      <ListItem button component={Link} to="/panel/aprobaciones" selected={ location.pathname == '/panel/aprobaciones'? true : false}>
-        <ListItemIcon>
-          <ThumbUpIcon />
-        </ListItemIcon>
-        <ListItemText primary="Aprobaciones" />
-      </ListItem>
-      <ListItem button component={Link} to="/panel/licencias" selected={ location.pathname == '/panel/licencias'? true : false}>
-        <ListItemIcon>
-          <HistoryIcon />
-        </ListItemIcon>
-        <ListItemText primary="Licencias" />
-      </ListItem>
+      {(user.user.role.name == "Administrator") &&
+        <ListItem button component={Link} to="/panel/aprobaciones" selected={location.pathname == '/panel/aprobaciones' ? true : false}>
+          <ListItemIcon>
+            <ThumbUpIcon />
+          </ListItemIcon>
+          <ListItemText primary="Aprobaciones" />
+        </ListItem>
+      }
+      {(user.user.role.name == "Authenticated") &&
+        <ListItem button component={Link} to="/panel/licencias" selected={location.pathname == '/panel/licencias' ? true : false}>
+          <ListItemIcon>
+            <HistoryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Licencias" />
+        </ListItem>
+      }
     </div>
   );
 }

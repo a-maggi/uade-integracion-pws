@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
+import { authenticationService } from '../services/Auth';
 import { Link } from "react-router-dom";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Orders() {
   const classes = useStyles();
 
+  const [user, setUser] = React.useState(authenticationService.user);
   const [messageError, setMessageError] = React.useState(false);
   const [isLoaded, setLoaded] = React.useState(true);
   const [data, setData] = React.useState(false);
@@ -39,7 +41,7 @@ export default function Orders() {
   const fetch = async () => {
     setLoaded(true);
     await DashboardService.fetchHours({
-      employee: '',
+      employee: user.user.role.name == "Administrator"? '' : user.user._id,
       dateFrom: format(subDays(new Date(), 1), "yyyy-MM-dd"),
       dateTo: format(subDays(new Date(),-2), "yyyy-MM-dd")
     })
