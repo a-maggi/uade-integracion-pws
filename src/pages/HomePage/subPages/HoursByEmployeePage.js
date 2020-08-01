@@ -117,7 +117,8 @@ export default () => {
   const [filters, setFilters] = React.useState({
     employee: '',
     dateFrom: false,
-    dateTo: false
+    dateTo: false,
+    type: 'signed'
   });
   React.useEffect(() => {
     fetch();
@@ -126,7 +127,7 @@ export default () => {
   const fetch = async () => {
     setLoaded(true);
     await fetchEmployees();
-    await fetchHours();
+    await fetchHours('signed');
     setLoaded(false);
   }
 

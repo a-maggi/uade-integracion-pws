@@ -146,7 +146,7 @@ export default () => {
         title: 'Cantidad de dias', field: 'hoursInCompany', render: rowData => {
           var fromDay = moment(new Date(rowData.newProposalEntryDatetime.replace('Z', '')));
           var toDay = moment(new Date(rowData.newProposalEgressDatetime.replace('Z', '')));
-          return toDay.diff(fromDay, 'days')
+          return toDay.diff(fromDay, 'days')+1
         }
       },
       {

@@ -251,6 +251,12 @@ function fetchHours(filters) {
         .then(res => {
           return res;
         });
+    else if (filters.type)
+      return fetch(`${REACT_APP_apiUrl}/hours?type=${filters.type}`, requestOptions)
+        .then(handleResponse)
+        .then(res => {
+          return res;
+        });
     else
       return fetch(`${REACT_APP_apiUrl}/hours`, requestOptions)
         .then(handleResponse)
