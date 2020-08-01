@@ -66,6 +66,27 @@ const useRowStyles = makeStyles({
   },
 });
 
+const formatList = (raw) => {
+  let data = [];
+  raw.forEach(e => {
+    if (!e || e === "") return;
+    let typeBill = data.find(x => x.type === e.type);
+    if (typeBill == undefined) {
+      data.push({
+        _id: e._id,
+        certifiedDays: 0,
+        type: e.type,
+        cost: 0
+      })
+      typeBill = data.find(x => x.type === e.type);
+    }
+    typeBill.certifiedDays += e.certifiedDays;
+    typeBill.cost += e.cost;
+
+  })
+  return data;
+}
+
 
 
 export default () => {
@@ -187,8 +208,6 @@ export default () => {
     setSuccessCreate(false);
   };
 
-
-
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
@@ -229,7 +248,7 @@ export default () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {row.bill_elements.map((rowBills) => (
+                    {formatList(row.bill_elements).map((rowBills) => (
                       <TableRow key={rowBills._id}>
                         <TableCell>{rowBills.certifiedDays}</TableCell>
                         <TableCell>{rowBills.type}</TableCell>
