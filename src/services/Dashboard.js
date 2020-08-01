@@ -16,10 +16,25 @@ export const DashboardService = {
   createHours,
   approvedHours,
   rejectHours,
-  creatBills
+  creatBills,
+  sendNews
 };
 
 
+
+function sendNews(data) {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify(data)
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/clearings`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
 
 function creatBills(data) {
   const requestOptions = {
@@ -202,7 +217,6 @@ function rejectHours(data) {
       return res;
     });
 }
-
 
 function createHours(data) {
   const requestOptions = {

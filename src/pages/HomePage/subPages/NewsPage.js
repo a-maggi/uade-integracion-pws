@@ -108,7 +108,7 @@ export default () => {
 
   const onSubmit = async (e) => {
     setLoaded(true);
-    await DashboardService.creatBills(formData)
+    await DashboardService.sendNews(formData)
       .then(res => {
         setSuccess(true);
       })
@@ -141,7 +141,7 @@ export default () => {
               id="date"
               label="Fecha desde"
               type="date"
-              name="periodStart"
+              name="start"
               onChange={handleChange}
               InputLabelProps={{
                 shrink: true,
@@ -153,7 +153,7 @@ export default () => {
               id="date"
               label="Fecha desde"
               type="date"
-              name="periodEnd"
+              name="end"
               onChange={handleChange}
               InputLabelProps={{
                 shrink: true,
@@ -181,12 +181,12 @@ export default () => {
 
       <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="success">
-          Factura pagada con exito.
+          Novedades enviadas con exito.
       </Alert>
       </Snackbar>
       <Snackbar open={error} autoHideDuration={6000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="error">
-          La factura no se pudo pagar.
+          Las novedades no se pudieron enviar.
       </Alert>
       </Snackbar>
 
