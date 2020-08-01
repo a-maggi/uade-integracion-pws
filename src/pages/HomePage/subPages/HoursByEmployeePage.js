@@ -109,8 +109,14 @@ export default () => {
     columns: [
       { title: 'Nombre', field: 'firstName' },
       { title: 'Apellido', field: 'lastName' },
-      { title: 'Horas a cumplir',  align: 'right', field: 'hoursPerMonth', type: 'numeric' },
-      { title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => (Math.floor(rowData.hoursInCompany / 60)+':'+rowData.hoursInCompany % 60 + ' hs') }
+      { title: 'Horas a cumplir', align: 'right', field: 'hoursPerMonth', type: 'numeric' },
+      {
+        title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => {
+          let hours = Math.floor(rowData.hoursInCompany / 60)
+          let minutes = rowData.hoursInCompany % 60
+          return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ' hs'
+        }
+      }
     ],
     data: [],
   });
@@ -157,7 +163,7 @@ export default () => {
       });
   }
 
-  
+
   const handleChange = (e) => {
     setFilters({
       ...filters,
@@ -213,7 +219,7 @@ export default () => {
                       setFilters({
                         ...filters,
                         // Trimming any whitespace
-                        'employee': newValue? newValue.id : false
+                        'employee': newValue ? newValue.id : false
                       });
                       setValueEmployee(newValue);
                     }}

@@ -124,7 +124,7 @@ export default () => {
     justified: "",
     id: ""
   });
-  
+
   const [user, setUser] = React.useState(authenticationService.user);
   const [state, setState] = React.useState({
     columns: [
@@ -146,7 +146,13 @@ export default () => {
       },
       { title: 'Nombre', field: 'firstName', render: rowData => (rowData.employee.firstName) },
       { title: 'Apellido', field: 'lastName', render: rowData => (rowData.employee.lastName) },
-      { title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => (Math.floor(rowData.hoursInCompany / 60)+':'+rowData.hoursInCompany % 60 + ' hs') }
+      {
+        title: 'Horas trabajadas', field: 'hoursInCompany', render: rowData => {
+          let hours = Math.floor(rowData.hoursInCompany / 60)
+          let minutes = rowData.hoursInCompany % 60
+          return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ' hs'
+        }
+      }
     ],
     data: [],
   });
