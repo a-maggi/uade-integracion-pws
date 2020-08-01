@@ -15,8 +15,25 @@ export const DashboardService = {
   modifyHours,
   createHours,
   approvedHours,
-  rejectHours
+  rejectHours,
+  creatBills
 };
+
+
+
+function creatBills(data) {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + authenticationService.user().jwt },
+    body: JSON.stringify(data)
+  };
+
+  return fetch(`${REACT_APP_apiUrl}/bills`, requestOptions)
+    .then(handleResponse)
+    .then(res => {
+      return res;
+    });
+}
 
 function fetchEmployees() {
   const requestOptions = {
@@ -30,7 +47,6 @@ function fetchEmployees() {
       return res;
     });
 }
-
 function fetchCustomers() {
   const requestOptions = {
     method: 'GET',

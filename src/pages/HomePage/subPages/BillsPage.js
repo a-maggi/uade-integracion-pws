@@ -1,5 +1,6 @@
 import React from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -20,6 +21,14 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import Modal from '@material-ui/core/Modal';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import { authenticationService } from '../../../services/Auth';
+
 const { REACT_APP_apiBank } = process.env;
 
 const useStyles = makeStyles((theme) => ({
@@ -29,6 +38,22 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
     marginBottom: theme.spacing(2),
+  },
+  paperModal: {
+    backgroundColor: theme.palette.background.paper,
+    border: '1px solid #ddd',
+    padding: theme.spacing(2, 4, 3),
+  },
+  margin: {
+    marginBottom: theme.spacing(5),
+  },
+  textField: {
+    display: 'block',
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
@@ -50,6 +75,24 @@ export default () => {
   const [messageError, setMessageError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState(false);
+  const [successCreate, setSuccessCreate] = React.useState(false);
+  const [errorCreate, setErrorCreate] = React.useState(false);
+  const [user, setUser] = React.useState(authenticationService.user);
+
+  const [formData, updateFormData] = React.useState({
+    periodStart: "",
+    periodEnd: "",
+  });
+
+  const [openModal, setOpenModal] = React.useState(false);
+
+  const onCloseModal = () => {
+    updateFormData({
+      periodStart: "",
+      periodEnd: "",
+    })
+    setOpenModal(false);
+  }
 
   React.useEffect(() => {
     fetchService();
@@ -67,6 +110,34 @@ export default () => {
     setLoaded(false);
   }
 
+  const handleChange = (e) => {
+    updateFormData({
+      ...formData,
+
+      // Trimming any whitespace
+      [e.target.name]: e.target.value
+    });
+  };
+
+
+  const onOpenModal = (data) => {
+    setOpenModal(!openModal);
+  }
+
+
+
+
+  const onSubmit = async () => {
+    await DashboardService.creatBills(formData)
+      .then(res => {
+        setSuccessCreate(true);
+        setOpenModal(false);
+        fetchService();
+      })
+      .catch(err => {
+        setErrorCreate(true);
+      });
+  }
 
   const onPayout = async (id, accountFrom, accountTo, amount, concept) => {
     const dataJson = {
@@ -101,7 +172,7 @@ export default () => {
       .catch(err => {
         setError(true);
       });
-      
+
   }
 
 
@@ -132,7 +203,7 @@ export default () => {
           <TableCell>
             {
               row.charged ? 'Pagada' :
-                <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={() => onPayout(row._id, 35, 56, (row.bill_elements).reduce((a, b) => a + b.cost, 0), row.customer.name + " " + row.periodStart + "-" + row.periodEnd)}>
+                <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={() => onPayout(row._id, user.user.customer.cbu, 56, (row.bill_elements).reduce((a, b) => a + b.cost, 0), row.customer.name + " " + row.periodStart + "-" + row.periodEnd)}>
                   Pagar
               </Button>
             }
@@ -146,9 +217,7 @@ export default () => {
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box margin={1}>
-                <Typography variant="h6" gutterBottom component="div">
-                  Detalle
-              </Typography>
+                <Typography variant="h6" gutterBottom component="div">Detalle</Typography>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
                     <TableRow>
@@ -179,9 +248,14 @@ export default () => {
     <React.Fragment>
       <Paper className={classes.paper}>
         <Toolbar>
-          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            Facturas
-      </Typography>
+          <Grid item xs={12} sm container>
+            <Grid item xs container direction="column" spacing={2}>
+              <Typography className={classes.title} variant="h6" id="tableTitle" component="div">Facturas</Typography>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={onOpenModal}>Generar factura</Button>
+            </Grid>
+          </Grid>
         </Toolbar>
         <TableContainer component={Paper}>
           {isLoaded ?
@@ -228,6 +302,58 @@ export default () => {
       </Alert>
       </Snackbar>
 
+      <Snackbar open={successCreate} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="success">
+          Factura generada con exito.
+        </Alert>
+      </Snackbar>
+      <Snackbar open={errorCreate} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="error">
+          La factura no se pudo generar.
+        </Alert>
+      </Snackbar>
+
+      <Modal
+        open={openModal}
+        onClose={onCloseModal}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        className={classes.modal}
+      >
+        <Paper className={classes.paperModal}>
+          <DialogTitle>Generar factura <em>(a fines educativos)</em></DialogTitle>
+          <DialogContent>
+            <TextField
+              id="date"
+              label="Fecha desde"
+              type="date"
+              name="periodStart"
+              onChange={handleChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              fullWidth
+              className={clsx(classes.margin, classes.textField)}
+            />
+            <TextField
+              id="date"
+              label="Fecha desde"
+              type="date"
+              name="periodEnd"
+              onChange={handleChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              fullWidth
+              className={clsx(classes.margin, classes.textField)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onCloseModal}>Cancelar</Button>
+            <Button onClick={onSubmit}>Confirmar</Button>
+          </DialogActions>
+        </Paper>
+      </Modal>
     </React.Fragment>
   );
 }
