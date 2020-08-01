@@ -351,7 +351,7 @@ export default () => {
 
             <TextField
               id="date"
-              label="Fecha desde"
+              label="Fecha hasta"
               type="datetime-local"
               name="egressSignedDatetime"
               defaultValue={formData.egressSignedDatetime.replace('Z', '')}

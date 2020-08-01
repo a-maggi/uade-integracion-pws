@@ -293,7 +293,7 @@ export default () => {
             />
             <TextField
               id="date"
-              label="Fecha desde"
+              label="Fecha hasta"
               type="date"
               name="egressSignedDatetime"
               onChange={handleChange}
